@@ -1,8 +1,9 @@
 import streamlit as st
 import random
 from openai import OpenAI
+from datetime import date
 
-# 1. 準備：タロットカードのリスト（大アルカナ22枚）
+# 1. 準備：タロットカードのリスト
 TAROT_CARDS = [
     "愚者", "魔術師", "女教皇", "女帝", "皇帝", "法王", "恋人", "戦車", "正義",
     "隠者", "運命の輪", "力", "吊るされた男", "死神", "節制", "悪魔", "塔",
@@ -12,48 +13,53 @@ TAROT_CARDS = [
 # 2. 画面のデザイン設定
 st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮")
 st.title("🔮 神秘の誕生日タロット占い")
-st.write("あなたの誕生日から導き出す宿命と、タロットのメッセージを届けます。")
+st.write("ニックネームと誕生日から、あなたの宿命とメッセージを読み解きます。")
 
-# 3. ユーザー入力
-name = st.text_input("お名前を教えてください")
-birthday = st.date_input("生年月日を選択してください", min_value=None)
+# --- カレンダーの範囲設定 ---
+today = date.today()
+min_year = today.year - 80
+birthday = st.date_input(
+    "生年月日を選択してください",
+    value=date(2000, 1, 1),
+    min_value=date(min_year, 1, 1),
+    max_value=today
+)
 
-# APIキーの入力設定（※後でネットに公開する時に安全に設定します）
-api_key = st.sidebar.text_input("OpenAI API Keyを入力（テスト用）", type="password")
+nickname = st.text_input("ニックネームを入力してください", placeholder="例：タロちゃん")
 
-# 4. 数秘術の計算（ライフパスナンバー）
-def calculate_numerology(date):
-    digits = "".join(filter(str.isdigit, str(date)))
+# APIキー設定（Secretsから読み込む設定です）
+api_key = st.secrets.get("OPENAI_API_KEY") or st.sidebar.text_input("OpenAI API Keyを入力", type="password")
+
+# 4. 数秘術の計算
+def calculate_numerology(date_obj):
+    digits = date_obj.strftime("%Y%m%d")
     while len(digits) > 1 and digits not in ["11", "22", "33"]:
         digits = str(sum(int(d) for d in digits))
     return digits
 
 if st.button("運命を占う"):
     if not api_key:
-        st.error("APIキーを入力してください。")
-    elif name:
-        # 計算と選択
+        st.error("APIキーが設定されていません。")
+    elif nickname:
         life_path = calculate_numerology(birthday)
         selected_card = random.choice(TAROT_CARDS)
         
         st.divider()
-        st.subheader(f"✨ {name}さんの鑑定結果")
+        st.subheader(f"✨ {nickname} さんの鑑定結果")
         st.write(f"**あなたのライフパスナンバー:** {life_path}")
         st.write(f"**引き当てたカード:** {selected_card}")
 
-        # AI（OpenAI）による鑑定文の生成
         client = OpenAI(api_key=api_key)
         
         with st.spinner("星の声を聴いています..."):
             prompt = f"""
-            占い師として、以下の情報から深みのある鑑定文を作成してください。
-            【ユーザー情報】名前：{name}, ライフパスナンバー：{life_path}
+            プロの占い師として、親しみやすくも神秘的なトーンで鑑定してください。
+            【ユーザー情報】ニックネーム：{nickname}, ライフパスナンバー：{life_path}
             【タロット】{selected_card}
-            【依頼】
-            1. まず、ライフパスナンバーが示すその人の本質を解説してください。
-            2. 次に、引いたタロットカードが今のその人に何を伝えているか解説してください。
-            3. 最後に、全体をまとめたポジティブなアドバイスをください。
-            4. 占い師らしい、神秘的で丁寧な口調でお願いします。
+            【鑑定内容】
+            1. {nickname}さんのライフパスナンバーが持つ「魂の性質」を解説してください。
+            2. 今回引いた「{selected_card}」が、今の{nickname}さんに伝えたいメッセージを優しく教えてください。
+            3. これからの日々をより良く過ごすためのアドバイスを最後に添えてください。
             """
             
             response = client.chat.completions.create(
@@ -61,8 +67,7 @@ if st.button("運命を占う"):
                 messages=[{"role": "user", "content": prompt}]
             )
             
-            result_text = response.choices[0].message.content
-            st.write(result_text)
-            st.success("鑑定が完了しました！")
+            st.write(response.choices[0].message.content)
+            st.success("鑑定が終わりました。あなたに幸運がありますように！")
     else:
-        st.warning("お名前を入力してください。")
+        st.warning("ニックネームを入力してくださいね。")
