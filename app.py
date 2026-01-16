@@ -154,12 +154,12 @@ if st.session_state.stage == 0:
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
 
-            # カット演出
-            deck = st.session_state.deck
-          n = len(deck)
+           # カット演出（安全版）
+deck = st.session_state.deck
+n = len(deck)
+
 if n >= 10:
-    # cut2が必ず cut1+1 以上になるように上限を調整
-    cut1 = random.randint(3, n - 4)      # ★ここがポイント（n-3 ではなく n-4）
+    cut1 = random.randint(3, n - 4)
     cut2 = random.randint(cut1 + 1, n - 3)
 
     a = deck[:cut1]
@@ -355,6 +355,7 @@ elif st.session_state.stage == 6:
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
