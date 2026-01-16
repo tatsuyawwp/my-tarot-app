@@ -586,32 +586,50 @@ elif st.session_state.stage == 6:
     with col_sns1:
         # X (Twitter)
         x_link = f"https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
-        st.link_button("🐦 X (Twitter)", x_link, use_container_width=True)
-        
-        # Threads (文字情報を送れる)
-        threads_link = f"https://www.threads.net/intent/post?text={encoded_text}%20{encoded_url}"
-        st.link_button("🧵 Threads", threads_link, use_container_width=True)
+       # --- ここからSNSロゴボタン（HTML版） ---
+    st.divider()
+    st.write("### 🔮 結果をシェアして幸運を広げる")
 
-    with col_sns2:
-        # LINE (日本国内では必須級)
-        line_link = f"https://social-plugins.line.me/lineit/share?url={encoded_url}"
-        st.link_button("💬 LINEで送る", line_link, use_container_width=True)
-        
-        # Facebook
-        fb_link = f"https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
-        st.link_button("📘 Facebook", fb_link, use_container_width=True)
+    # シェア用の文章とURLの準備
+    share_text = f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い"
+    encoded_text = urllib.parse.quote(share_text)
+    share_url = "https://my-tarot-app.streamlit.app/" # あなたのアプリURL
+    encoded_url = urllib.parse.quote(share_url)
 
-    # Instagram & TikTok (プロフィールへの誘導)
-    st.write("#### 📱 Creator Links")
-    col_sns3, col_sns4 = st.columns(2)
-    with col_sns3:
-        # あなたのインスタURLを入れてください
-        st.link_button("📸 Instagram", "https://www.instagram.com/あなたのID", use_container_width=True)
-    with col_sns4:
-        # あなたのTikTok URLを入れてください
-        st.link_button("🎵 TikTok", "https://www.tiktok.com/@あなたのID", use_container_width=True)
+    # HTMLでのカスタムボタン表示
+    sns_html = f"""
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+        <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">
+            <i class="fa-brands fa-x-twitter"></i> X (Twitter)
+        </a>
+        <a href="https://www.threads.net/intent/post?text={encoded_text}%20{encoded_url}" target="_blank" class="sns-button btn-threads">
+            <i class="fa-brands fa-threads"></i> Threads
+        </a>
+        <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line">
+            <i class="fa-brands fa-line"></i> LINE
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}" target="_blank" class="sns-button btn-fb">
+            <i class="fa-brands fa-facebook"></i> Facebook
+        </a>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <h4 style="font-size: 1rem; opacity: 0.8;">📱 Creator Links</h4>
+    </div>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+        <a href="https://www.instagram.com/あなたのID" target="_blank" class="sns-button btn-insta">
+            <i class="fa-brands fa-instagram"></i> Instagram
+        </a>
+        <a href="https://www.tiktok.com/@あなたのID" target="_blank" class="sns-button btn-tiktok">
+            <i class="fa-brands fa-tiktok"></i> TikTok
+        </a>
+    </div>
+    """
+    st.markdown(sns_html, unsafe_allow_html=True)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
