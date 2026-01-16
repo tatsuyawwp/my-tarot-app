@@ -52,24 +52,61 @@ api_key = raw_key.strip() if raw_key else None
 # CSS（見た目）
 # =========================
 st.markdown("""
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <style>
-/* スマホでもはみ出さないように最大幅を設定 */
+/* 1. カードコンテナの調整 */
 .fade-container { 
     max-width: 280px; 
     width: 90%; 
     margin: 0 auto; 
 }
+
+/* 2. カード画像の設定 */
 .fade-img {
     width: 100%;
     border-radius: 14px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* カードに影をつけて立体的に */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     transition: opacity 0.8s ease-in-out;
     display: block;
 }
 .hidden { opacity: 0; }
 .visible { opacity: 1; }
 
-/* 鑑定結果のテキストボックスを装飾 */
+/* 3. SNSボタンの共通スタイル */
+.sns-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 5px;
+    color: white !important;
+    text-decoration: none !important;
+    font-weight: bold;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box; /* はみ出し防止 */
+    transition: 0.3s;
+}
+.sns-button i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+.sns-button:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+}
+
+/* 4. 各SNSのブランドカラー */
+.btn-x { background-color: #000000; }
+.btn-threads { background-color: #000000; }
+.btn-line { background-color: #06C755; }
+.btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+.btn-tiktok { background-color: #010101; }
+.btn-fb { background-color: #1877F2; }
+
+/* 鑑定結果テキストボックス */
 .result-box {
     background-color: #f9f9fb;
     border-left: 5px solid #d4af37;
@@ -79,7 +116,6 @@ st.markdown("""
     line-height: 1.7;
     color: #333;
 }
-.small-note { opacity: 0.85; font-size: 0.9rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -576,6 +612,7 @@ elif st.session_state.stage == 6:
         st.link_button("🎵 TikTok", "https://www.tiktok.com/@あなたのID", use_container_width=True)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
