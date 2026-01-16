@@ -53,7 +53,7 @@ def calculate_numerology(date_obj):
     return digits
 
 # =========================
-# CSS（軽い演出）
+# CSS（演出）
 # =========================
 st.markdown("""
 <style>
@@ -75,10 +75,10 @@ st.markdown("""
 # stage:
 # 0=未開始（入力）
 # 1=シャッフル/カット完了、ミックス開始待ち
-# 2=ミックス中
+# 2=ミックス中（擬似アニメ）
 # 3=ストップ後、候補提示（選ぶ）
 # 4=選んだカード（裏向き）
-# 5=表表示＆鑑定ボタン
+# 5=フェードで表へ（開いた）
 # 6=鑑定結果表示
 # =========================
 if "stage" not in st.session_state:
@@ -91,6 +91,8 @@ if "selected_card_name" not in st.session_state:
     st.session_state.selected_card_name = None
 if "reading_text" not in st.session_state:
     st.session_state.reading_text = None
+if "fade_step" not in st.session_state:
+    st.session_state.fade_step = 0
 
 def reset_all():
     st.session_state.stage = 0
@@ -98,6 +100,7 @@ def reset_all():
     st.session_state.candidates = []
     st.session_state.selected_card_name = None
     st.session_state.reading_text = None
+    st.session_state.fade_step = 0
 
 # =========================
 # 入力（fortune_topic は必ずここで定義）
@@ -151,7 +154,7 @@ if st.session_state.stage == 0:
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
 
-            # カット演出（分割→合体）
+            # カット演出
             deck = st.session_state.deck
             if len(deck) >= 10:
                 cut1 = random.randint(3, len(deck) - 3)
@@ -194,6 +197,7 @@ elif st.session_state.stage == 2:
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
 
+        # 候補7枚（重複なし）
         candidates = []
         for _ in range(7):
             if len(st.session_state.deck) == 0:
@@ -221,10 +225,10 @@ elif st.session_state.stage == 3:
                 <img src="{TAROT_BACK_URL}" class="fade-img visible">
             </div>
             """, unsafe_allow_html=True)
-
             if st.button("選ぶ", key=f"pick_{name}"):
                 st.session_state.selected_card_name = name
                 st.session_state.reading_text = None
+                st.session_state.fade_step = 0
                 st.session_state.stage = 4
                 st.rerun()
 
@@ -240,18 +244,36 @@ elif st.session_state.stage == 4:
     """, unsafe_allow_html=True)
 
     if st.button("✨ カードを開く"):
+        st.session_state.fade_step = 1
         st.session_state.stage = 5
         st.rerun()
 
-# --- stage 5: 表表示＆鑑定 ---
+# --- stage 5: フェードで表へ＆鑑定 ---
 elif st.session_state.stage == 5:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
 
     st.subheader("✨ カードが示されました…")
-    st.image(card_url, width=240)
-    st.caption(f"引いたカード: {card_name}")
 
+    # fade_step 1: 裏を消す（暗転風）
+    if st.session_state.fade_step == 1:
+        st.markdown(f"""
+        <div class="fade-container">
+            <img src="{TAROT_BACK_URL}" class="fade-img hidden">
+        </div>
+        """, unsafe_allow_html=True)
+        time.sleep(0.25)
+        st.session_state.fade_step = 2
+        st.rerun()
+
+    # fade_step 2: 表を表示
+    st.markdown(f"""
+    <div class="fade-container">
+        <img src="{card_url}" class="fade-img visible">
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.caption(f"引いたカード: {card_name}")
     st.write(f"**{nickname} さんのライフパスナンバー:** {life_path}")
     st.write(f"**占いたい内容:** {fortune_topic}")
 
