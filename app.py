@@ -1,9 +1,19 @@
 import streamlit as st
 import random
+import time
 from openai import OpenAI
 from datetime import date
 
-# 1) タロット画像（表）
+# =========================
+# 設定
+# =========================
+st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮")
+st.title("🔮 神秘の誕生日タロット占い（無料版）")
+
+# 裏面（バックプリント）
+TAROT_BACK_URL = "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tarrotback.png?raw=true"
+
+# 表面カード
 TAROT_DATA = {
     "愚者": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true",
     "魔術師": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/magician.png?raw=true",
@@ -29,38 +39,89 @@ TAROT_DATA = {
     "世界": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true"
 }
 
-st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮")
-st.title("🔮 神秘の誕生日タロット占い（無料版）")
-
-# --- Secrets ---
+# APIキー
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
-# --- Numerology ---
+
+# =========================
+# ユーティリティ
+# =========================
 def calculate_numerology(date_obj):
     digits = date_obj.strftime("%Y%m%d")
     while len(digits) > 1 and digits not in ["11", "22", "33"]:
         digits = str(sum(int(d) for d in digits))
     return digits
 
-# --- Session State ---
-# stage: 0=未開始, 1=シャッフル済, 2=カット済, 3=引いた(裏), 4=開いた(表), 5=鑑定済
+
+# =========================
+# CSS（フェード演出）
+# =========================
+st.markdown("""
+<style>
+.fade-container {
+    width: 260px;
+    margin: 0 auto;
+}
+.fade-img {
+    width: 100%;
+    border-radius: 14px;
+    transition: opacity 0.8s ease-in-out;
+    display: block;
+}
+.hidden { opacity: 0; }
+.visible { opacity: 1; }
+
+.small-note {
+    opacity: 0.85;
+    font-size: 0.95rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# =========================
+# Session State 初期化
+# stage:
+# 0=未開始（入力）
+# 1=シャッフル/カット完了、ミックス開始待ち
+# 2=ミックス中
+# 3=ストップ後、候補提示（選ぶ）
+# 4=選んだカード（裏向き）
+# 5=フェードで表へ（開いた）
+# 6=鑑定結果表示
+# =========================
 if "stage" not in st.session_state:
     st.session_state.stage = 0
 
 if "deck" not in st.session_state:
     st.session_state.deck = []
 
+if "candidates" not in st.session_state:
+    st.session_state.candidates = []
+
 if "selected_card_name" not in st.session_state:
     st.session_state.selected_card_name = None
-
-if "revealed" not in st.session_state:
-    st.session_state.revealed = False
 
 if "reading_text" not in st.session_state:
     st.session_state.reading_text = None
 
-# --- Input ---
+if "fade_step" not in st.session_state:
+    st.session_state.fade_step = 0
+
+
+def reset_all():
+    st.session_state.stage = 0
+    st.session_state.deck = []
+    st.session_state.candidates = []
+    st.session_state.selected_card_name = None
+    st.session_state.reading_text = None
+    st.session_state.fade_step = 0
+
+
+# =========================
+# 入力
+# =========================
 today = date.today()
 birthday = st.date_input(
     "生年月日を選択してください",
@@ -70,103 +131,163 @@ birthday = st.date_input(
 )
 nickname = st.text_input("ニックネームを入力してください", placeholder="例：たろちゃん")
 
+col_r1, col_r2 = st.columns([1, 2])
+with col_r1:
+    if st.button("🔄 最初からやり直す"):
+        reset_all()
+        st.rerun()
+
 st.divider()
 
-# --- Reset ---
-if st.button("🔄 最初からやり直す"):
-    st.session_state.stage = 0
-    st.session_state.deck = []
-    st.session_state.selected_card_name = None
-    st.session_state.revealed = False
-    st.session_state.reading_text = None
-    st.rerun()
-
-# --- Guidance text ---
+# ライフパス
 life_path = calculate_numerology(birthday) if nickname else None
 
-st.subheader("🧘‍♂️ 占いの手順（ワンオラクル）")
-st.write("1) 質問を心に思い浮かべる → 2) シャッフル → 3) カット → 4) 1枚引く → 5) 開く → 6) 鑑定")
 
-# ===== Step 0: 準備 =====
+# =========================
+# メインフロー
+# =========================
+
+# --- stage 0: 準備 ---
 if st.session_state.stage == 0:
-    st.info("まずはニックネームを入れて、心の中で『今日の自分に必要なメッセージは？』と唱えてください。")
-    if st.button("🌀 シャッフルする（カードを混ぜる）"):
+    st.subheader("🧘‍♂️ 準備")
+    st.write("心の中で『今日の自分に必要なメッセージは？』と唱えてください。")
+    st.markdown('<div class="small-note">※ ニックネームを入力してから進めます</div>', unsafe_allow_html=True)
+
+    if st.button("🌀 シャッフル＆カットして準備する"):
         if not nickname:
             st.warning("ニックネームを入れてください。")
         else:
+            # 山札作成→シャッフル
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
+
+            # カット演出（分割→合体）
+            deck = st.session_state.deck
+            if len(deck) >= 10:
+                cut1 = random.randint(3, len(deck) - 3)
+                cut2 = random.randint(cut1 + 1, len(deck) - 3)
+                a = deck[:cut1]
+                b = deck[cut1:cut2]
+                c = deck[cut2:]
+                st.session_state.deck = b + c + a
+            else:
+                random.shuffle(st.session_state.deck)
+
             st.session_state.stage = 1
             st.rerun()
 
-# ===== Step 1: シャッフル済 =====
+# --- stage 1: ミックス開始待ち ---
 elif st.session_state.stage == 1:
-    st.success("シャッフルしました。次は直感で『カット』します。")
-    st.write("山札を2〜3つに分けて重ね直すイメージでOK。")
-    if st.button("✂️ カットする"):
-        # カット演出（実際はランダムで山の分割→合体）
-        deck = st.session_state.deck
-        if len(deck) >= 10:
-            cut1 = random.randint(3, len(deck) - 3)
-            cut2 = random.randint(3, len(deck) - 3)
-            a = deck[:cut1]
-            b = deck[cut1:cut2]
-            c = deck[cut2:]
-            new_deck = b + c + a
-        else:
-            new_deck = deck[:]
-            random.shuffle(new_deck)
+    st.subheader("🃏 ミックス開始")
+    st.write("目の前でカードがぐるぐる混ざります。直感で『今だ！』と思ったら止めてください。")
 
-        st.session_state.deck = new_deck
+    if st.button("🌀 ミックス開始"):
         st.session_state.stage = 2
         st.rerun()
 
-# ===== Step 2: カット済 → 引く =====
+# --- stage 2: ミックス中（擬似アニメ） ---
 elif st.session_state.stage == 2:
-    st.success("カットしました。次はいよいよ1枚引きます。")
-    st.write("直感で『今だ』と思ったらボタンを押してください。")
-    # 裏向きカードの雰囲気
-    cols = st.columns(7)
-    for i in range(7):
-        with cols[i]:
-            st.markdown("🂠")
+    st.subheader("🌀 ミックス中…")
+    st.write("止めたいタイミングで下のボタンを押してください。")
 
-    if st.button("🎴 1枚引く（まだ開かない）"):
-        st.session_state.selected_card_name = st.session_state.deck.pop()
-        st.session_state.revealed = False
-        st.session_state.reading_text = None
+    anim = st.empty()
+    # 裏面画像を “揺れてる感” で見せる（角丸＋少しだけサイズ変動）
+    # Streamlitは本アニメが弱いので、短いsleep+rerunで疑似演出
+    wobble = random.choice([248, 252, 256, 260, 264])
+
+    anim.markdown(f"""
+    <div class="fade-container">
+        <img src="{TAROT_BACK_URL}" class="fade-img visible" style="width:{wobble}px;">
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("⏹️ ストップ（止める）"):
+        # 候補7枚を作る（重複なし）
+        if not st.session_state.deck:
+            st.session_state.deck = list(TAROT_DATA.keys())
+            random.shuffle(st.session_state.deck)
+
+        candidates = []
+        for _ in range(7):
+            if len(st.session_state.deck) == 0:
+                st.session_state.deck = list(TAROT_DATA.keys())
+                random.shuffle(st.session_state.deck)
+            candidates.append(st.session_state.deck.pop())
+
+        st.session_state.candidates = candidates
         st.session_state.stage = 3
         st.rerun()
 
-# ===== Step 3: 引いた（裏向き） → 開く =====
+    time.sleep(0.12)
+    st.rerun()
+
+# --- stage 3: 候補提示（選ぶ） ---
 elif st.session_state.stage == 3:
-    st.success("カードを引きました。今はまだ裏向きです。")
+    st.subheader("✨ 目の前に浮かび上がったカード")
+    st.write("この中から **直感で1枚** 選んでください（まだ表は見えません）。")
+
+    cols = st.columns(7)
+    for i, name in enumerate(st.session_state.candidates):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="fade-container">
+                <img src="{TAROT_BACK_URL}" class="fade-img visible">
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("選ぶ", key=f"pick_{name}"):
+                st.session_state.selected_card_name = name
+                st.session_state.fade_step = 0
+                st.session_state.reading_text = None
+                st.session_state.stage = 4
+                st.rerun()
+
+# --- stage 4: 選んだカード（裏向き） ---
+elif st.session_state.stage == 4:
+    st.subheader("🂠 あなたが選んだカード（裏向き）")
     st.write("深呼吸して、準備ができたらカードを開いてください。")
 
-    # 裏向き表示（本当の裏面画像があるなら差し替え推奨）
-    st.markdown("### 🂠 ここにあなたのカード（裏向き）が置かれています")
+    st.markdown(f"""
+    <div class="fade-container">
+        <img src="{TAROT_BACK_URL}" class="fade-img visible">
+    </div>
+    """, unsafe_allow_html=True)
 
     if st.button("✨ カードを開く"):
-        st.session_state.revealed = True
-        st.session_state.stage = 4
+        st.session_state.fade_step = 1
+        st.session_state.stage = 5
         st.rerun()
 
-# ===== Step 4: 開いた（表） → 鑑定 =====
-elif st.session_state.stage == 4:
-    selected_card_name = st.session_state.selected_card_name
-    card_image_url = TAROT_DATA[selected_card_name]
+# --- stage 5: フェードで表へ ---
+elif st.session_state.stage == 5:
+    card_name = st.session_state.selected_card_name
+    card_url = TAROT_DATA[card_name]
 
-    st.subheader(f"✨ {nickname} さんの無料鑑定（簡易）")
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        st.image(card_image_url, width=220)
-        st.caption(f"引いたカード: {selected_card_name}")
-    with col2:
-        st.write(f"**ライフパスナンバー:** {life_path}")
-        st.write("**質問:** 今日の自分に必要なメッセージは？")
+    st.subheader("✨ カードが示されました…")
+
+    # step1: 暗転（裏を消す）
+    if st.session_state.fade_step == 1:
+        st.markdown(f"""
+        <div class="fade-container">
+            <img src="{TAROT_BACK_URL}" class="fade-img hidden">
+        </div>
+        """, unsafe_allow_html=True)
+        time.sleep(0.25)
+        st.session_state.fade_step = 2
+        st.rerun()
+
+    # step2: 表を表示（フェードイン）
+    st.markdown(f"""
+    <div class="fade-container">
+        <img src="{card_url}" class="fade-img visible">
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.caption(f"引いたカード: {card_name}")
+    st.write(f"**{nickname} さんのライフパスナンバー:** {life_path}")
 
     st.divider()
-    st.write("🔮 準備ができたら、鑑定を開始します。")
+    st.write("🔮 準備ができたら鑑定を開始します。")
+
     if st.button("🔮 鑑定する（無料・簡易）"):
         if not api_key:
             st.error("APIキーが設定されていません。Secretsを確認してください。")
@@ -175,7 +296,7 @@ elif st.session_state.stage == 4:
             with st.spinner("星の声を聴いています..."):
                 prompt = (
                     f"あなたは神秘的で優しい占い師です。"
-                    f"{nickname}さん（ライフパスナンバー{life_path}）が引いたタロット『{selected_card_name}』について、"
+                    f"{nickname}さん（ライフパスナンバー{life_path}）が引いたタロット『{card_name}』について、"
                     f"無料版として短めに、"
                     f"1) 今日のテーマ（1〜2行）"
                     f"2) ひとことメッセージ（1〜2行）"
@@ -188,32 +309,34 @@ elif st.session_state.stage == 4:
                 )
                 st.session_state.reading_text = response.choices[0].message.content
 
-            st.session_state.stage = 5
+            st.session_state.stage = 6
             st.rerun()
 
-# ===== Step 5: 鑑定結果表示 =====
-elif st.session_state.stage == 5:
-    selected_card_name = st.session_state.selected_card_name
-    card_image_url = TAROT_DATA[selected_card_name]
+# --- stage 6: 結果表示 ---
+elif st.session_state.stage == 6:
+    card_name = st.session_state.selected_card_name
+    card_url = TAROT_DATA[card_name]
 
     st.subheader(f"✨ {nickname} さんの鑑定結果（無料版）")
+
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.image(card_image_url, width=220)
-        st.caption(f"引いたカード: {selected_card_name}")
+        st.image(card_url, width=240)
+        st.caption(f"引いたカード: {card_name}")
     with col2:
         st.write(f"**ライフパスナンバー:** {life_path}")
-        st.write(f"**引き当てたカード:** {selected_card_name}")
+        st.write("**質問:** 今日の自分に必要なメッセージは？")
 
     st.write(st.session_state.reading_text)
     st.success("鑑定が完了しました！")
 
-    # 有料導線はまだ「予告」だけにしておく（次フェーズで実装）
     st.divider()
     st.write("### 🔒 もっと深く占う（有料版で追加予定）")
-    st.write("- 過去/現在/未来（3枚引き）\n- 相手の気持ち\n- 具体的な行動プラン\n- 追加で1枚引き（アドバイスカード）")
+    st.write("- 過去/現在/未来（3枚引き）\n- 相手の気持ち\n- 具体的な行動プラン\n- 追加で1枚（アドバイスカード）")
 
     st.divider()
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
+  
