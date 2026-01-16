@@ -54,67 +54,59 @@ st.markdown("""
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-/* 1. カードコンテナの調整 */
-.fade-container { 
-    max-width: 280px; 
-    width: 90%; 
-    margin: 0 auto; 
+/* Result readability */
+.result-title{
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 
-/* 2. カード画像の設定 */
-.fade-img {
-    width: 100%;
-    border-radius: 14px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-    transition: opacity 0.8s ease-in-out;
-    display: block;
-}
-.hidden { opacity: 0; }
-.visible { opacity: 1; }
-
-/* 3. SNSボタンの共通スタイル */
-.sns-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin: 5px;
-    color: white !important;
-    text-decoration: none !important;
-    font-weight: bold;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box; /* はみ出し防止 */
-    transition: 0.3s;
-}
-.sns-button i {
-    margin-right: 8px;
-    font-size: 18px;
-}
-.sns-button:hover {
-    opacity: 0.8;
-    transform: translateY(-2px);
+.result-box{
+  background: #fbfbfd;
+  border-left: 6px solid #d4af37;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.95;
+  font-size: 1.03rem;
+  color: #222;
 }
 
-/* 4. 各SNSのブランドカラー */
-.btn-x { background-color: #000000; }
-.btn-threads { background-color: #000000; }
-.btn-line { background-color: #06C755; }
-.btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-.btn-tiktok { background-color: #010101; }
-.btn-fb { background-color: #1877F2; }
+.result-box p{ margin: 0.6em 0; }
+.result-box ul{ margin: 0.6em 0 0.9em 1.2em; }
+.result-box li{ margin: 0.4em 0; }
+.result-box strong{ color:#111; }
 
-/* 鑑定結果テキストボックス */
-.result-box {
-    background-color: #f9f9fb;
-    border-left: 5px solid #d4af37;
-    padding: 20px;
-    border-radius: 8px;
-    margin: 15px 0;
-    line-height: 1.7;
-    color: #333;
-st.markdown("""
+/* SNS buttons */
+.sns-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 15px;
+  border-radius:8px;
+  margin:5px;
+  color:#fff !important;
+  text-decoration:none !important;
+  font-weight:bold;
+  font-size:14px;
+  width:100%;
+  transition:0.3s;
+}
+.sns-button:hover{
+  opacity:0.85;
+  transform:translateY(-2px);
+}
+
+.btn-x{ background:#000; }
+.btn-line{ background:#06C755; }
+.btn-fb{ background:#1877F2; }
+.btn-threads{ background:#000; }
+.btn-insta{
+  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+}
+.btn-tiktok{ background:#010101; }
+</style>
+""", unsafe_allow_html=True)
+
 <style>
 /* 追加: 結果を読みやすく */
 
@@ -545,6 +537,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
 
