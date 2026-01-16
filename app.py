@@ -475,54 +475,85 @@ elif st.session_state.stage == 6:
     st.markdown(st.session_state.reading_text or "")
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # ✅ ここに「有料版へ」導線を入れる（シェアより前がベスト）
+    st.divider()
+    st.markdown("## 🔒 もっと深く占う（有料版）")
+    st.write("無料版は“今日のテーマ”まで。次は、あなたの状況に合わせて **原因と具体策** まで深掘りします。")
+
+    u1, u2, u3 = st.columns(3)
+    with u1:
+        st.markdown("### 🕰 過去・現在・未来\n3枚引きで流れを読む")
+    with u2:
+        st.markdown("### 🧭 具体的な行動\nあなた用の優先順位を作る")
+    with u3:
+        st.markdown("### 💡 追加1枚\nアドバイスカードを引く")
+
+    st.info("※ 不安を煽らず、前向きに整える鑑定だけを行います。")
+    st.link_button("✨ 有料版で深掘りする（おすすめ）", "https://coconala.com/", use_container_width=True, type="primary")
+
     # --- シェア ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
-    share_text = f"【神秘の誕生日タロット】今日のカードは『{card_name}』でした🔮 #AIタロット"
     share_url = "https://my-tarot-app.streamlit.app/"
+
+    share_variant = st.radio(
+        "シェア文を選ぶ",
+        ["短め", "しっかり", "かわいく"],
+        horizontal=True
+    )
+
+    if share_variant == "短め":
+        share_text = f"今日のカードは『{card_name}』🔮 #AIタロット"
+    elif share_variant == "しっかり":
+        share_text = f"【神秘の誕生日タロット】今日のカードは『{card_name}』でした🔮 誕生日×タロットで背中を押してもらえた… #AIタロット"
+    else:
+        share_text = f"今日のわたしに必要なメッセージ…『{card_name}』だったよ🫶🔮 #AIタロット"
 
     encoded_text = urllib.parse.quote(share_text)
     encoded_url = urllib.parse.quote(share_url)
 
-    # コピー用（Instagram / TikTok / Facebook 対応）
-    st.code(f"{share_text}\n{share_url}", language="text")
-    st.caption("↑ この文章をコピーして、Instagram / TikTok / Facebook に貼り付けてね")
+    share_pack = f"{share_text}\n{share_url}"
+
+    c_copy1, c_copy2 = st.columns([1, 1])
+    with c_copy1:
+        if st.button("📋 文章をコピー（Instagram / TikTok向け）", use_container_width=True):
+            st.toast("この下の文章を選択してコピーしてね ✨", icon="✅")
+    with c_copy2:
+        if st.button("📋 URLだけコピー（LINE / Facebook向け）", use_container_width=True):
+            st.toast("URLをコピーしてシェアしよう ✨", icon="✅")
+
+    st.code(share_pack, language="text")
+    st.caption("↑ ここをドラッグしてコピーしてね（スマホは長押し→コピー）")
 
     sns_html = f"""
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
 
-      <!-- X -->
       <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
          target="_blank" class="sns-button btn-x">
          <i class="fa-brands fa-x-twitter"></i> X
       </a>
 
-      <!-- LINE -->
       <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}"
          target="_blank" class="sns-button btn-line">
          <i class="fa-brands fa-line"></i> LINE
       </a>
 
-      <!-- Facebook -->
       <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
          target="_blank" class="sns-button btn-fb">
          <i class="fa-brands fa-facebook"></i> Facebook
       </a>
 
-      <!-- Threads -->
       <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}"
          target="_blank" class="sns-button btn-threads">
          <i class="fa-brands fa-threads"></i> Threads
       </a>
 
-      <!-- Instagram -->
       <a href="https://www.instagram.com/"
          target="_blank" class="sns-button btn-insta">
          <i class="fa-brands fa-instagram"></i> Instagram
       </a>
 
-      <!-- TikTok -->
       <a href="https://www.tiktok.com/"
          target="_blank" class="sns-button btn-tiktok">
          <i class="fa-brands fa-tiktok"></i> TikTok
@@ -534,6 +565,7 @@ elif st.session_state.stage == 6:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
 
