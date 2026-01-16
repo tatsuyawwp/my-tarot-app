@@ -3,11 +3,10 @@ import random
 from openai import OpenAI
 from datetime import date
 
-# 1. 準備：タロットカードデータ（リンクを非常に安定したものに固定）
+# 1. 準備：タロットカードデータ（リンクを修正・統一）
 TAROT_DATA = {
-    TAROT_DATA = {
-    "愚者": "https://raw.githubusercontent.com/tatsuyawwp/my-tarot-app/main/fool.png",
-    "魔術師":"https://raw.githubusercontent.com/tatsuyawwp/my-tarot-app/main/magician.png",
+    "愚者": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true",
+    "魔術師": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/magician.png?raw=true",
     "女教皇": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/high%20priestess.jpg?raw=true",
     "女帝": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/empress.png?raw=true",
     "皇帝": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/emperor.png?raw=true",
@@ -62,7 +61,6 @@ if st.button("運命を占う"):
         # 写真と結果を表示
         col1, col2 = st.columns([1, 2])
         with col1:
-            # 画像URLを直接表示してデバッグ（動作確認用）
             st.image(card_image_url, width=200)
             st.caption(f"引いたカード: {selected_card_name}")
         with col2:
@@ -72,7 +70,10 @@ if st.button("運命を占う"):
         client = OpenAI(api_key=api_key)
         with st.spinner("星の声を聴いています..."):
             prompt = f"占い師として、{nickname}さん（ライフパスナンバー{life_path}）が引いたタロット『{selected_card_name}』を神秘的に鑑定してください。"
-            response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}])
+            response = client.chat.completions.create(
+                model="gpt-4o-mini", 
+                messages=[{"role": "user", "content": prompt}]
+            )
             st.write(response.choices[0].message.content)
             st.success("鑑定が完了しました！")
 
@@ -83,9 +84,3 @@ if st.button("運命を占う"):
         st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
     else:
         st.warning("ニックネームを入れてください。")
-
-
-
-
-
-
