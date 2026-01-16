@@ -462,7 +462,6 @@ elif st.session_state.stage == 5:
             st.session_state.stage = 6
             st.rerun()
 
-
 # --- stage 6: 結果表示 ---
 elif st.session_state.stage == 6:
     card_name = st.session_state.selected_card_name
@@ -476,7 +475,7 @@ elif st.session_state.stage == 6:
     st.markdown(st.session_state.reading_text or "")
     st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- シェア ---
+    # --- シェア ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
@@ -532,9 +531,9 @@ elif st.session_state.stage == 6:
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
- st.divider()
-    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
 
+    st.divider()
+    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
 
 
 
