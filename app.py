@@ -415,13 +415,16 @@ elif st.session_state.stage == 5:
     card_url = TAROT_DATA[card_name]
 
     st.subheader("✨ カードが示されました…")
-    st.markdown(f'<div class="fade-container"><img src="{card_url}" class="fade-img visible"></div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="fade-container"><img src="{card_url}" class="fade-img visible"></div>',
+        unsafe_allow_html=True
+    )
     st.caption(f"今日引いたカード: {card_name}")
 
     st.divider()
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-        if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
+    if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
         if not api_key:
             st.error("APIキーが設定されていません。")
         elif not nickname:
@@ -456,9 +459,9 @@ elif st.session_state.stage == 5:
 【今日のタロット（今日のテーマ）】：{card_name}
 
 【鑑定ルール】
-・まず誕生日パーソナリティから「この人らしさ」をやさしく伝える
-・次に「その人らしさ × 今日のカード」が出た意味を掛け合わせて語る
-・{fortune_topic}にフォーカスし、今日すぐできる行動に落とす
+・誕生日パーソナリティから「この人らしさ」をやさしく伝える
+・その人らしさ × 今日のカードを掛け合わせて語る
+・{fortune_topic}にフォーカスし、今日できる行動に落とす
 ・説教せず、寄り添いと励ましを大切にする
 
 【出力形式】
@@ -479,6 +482,7 @@ elif st.session_state.stage == 5:
 
             st.session_state.stage = 6
             st.rerun()
+
 
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
@@ -510,6 +514,7 @@ elif st.session_state.stage == 5:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
+
 
 
 
