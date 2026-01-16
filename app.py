@@ -571,6 +571,7 @@ elif st.session_state.stage == 6:
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     # --- SNSシェア・拡散機能（ここから差し替え） ---
+   
   【誕生日パーソナリティ（{birthday_key}）】
 称号：{profile['title']}
 核：{profile['core']}
@@ -626,6 +627,7 @@ elif st.session_state.stage == 6:
 """)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
