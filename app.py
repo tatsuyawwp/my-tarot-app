@@ -571,22 +571,14 @@ elif st.session_state.stage == 6:
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     # --- SNSシェア・拡散機能（ここから差し替え） ---
-    st.divider()
-    st.write("### 🔮 結果をシェアして幸運を広げる")
-
-    # シェア用の文章とURL
-    share_text = f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い"
-    encoded_text = urllib.parse.quote(share_text)
-    share_url = "https://my-tarot-app.streamlit.app/" # あなたのアプリURL
-    encoded_url = urllib.parse.quote(share_url)
-
-    # ボタンを横に並べる（スマホでは自動で折り返されます）
-    col_sns1, col_sns2 = st.columns(2)
-    
-    with col_sns1:
-        # X (Twitter)
-        x_link = f"https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
-       # --- ここからSNSロゴボタン（HTML版） ---
+  【誕生日パーソナリティ（{birthday_key}）】
+称号：{profile['title']}
+核：{profile['core']}
+強み：{', '.join(profile['strengths'])}
+注意点：{', '.join(profile['pitfalls'])}
+伸びる条件：{profile['growth']}
+合言葉：{profile['mantra']}
+"""
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
@@ -634,6 +626,7 @@ elif st.session_state.stage == 6:
 """)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
