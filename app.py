@@ -399,7 +399,6 @@ elif st.session_state.stage == 4:
         st.rerun()
 
 # --- stage 5: 表を表示＆鑑定開始 ---
-# --- stage 5: 表を表示＆鑑定ボタン ---
 elif st.session_state.stage == 5:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
@@ -431,7 +430,7 @@ elif st.session_state.stage == 5:
 あなたは経験豊富で思いやりのある占い師です。
 相談者の味方として、対面で語りかけるように温かく導いてください。
 不安を煽る表現や断定的な不幸表現は禁止です。
-口調は「{tone_hint}」。人間味があり、頼りがいのある語り口にしてください。
+口調は「{tone_hint}」。
 
 【相談者情報】
 ニックネーム：{nickname}
@@ -440,48 +439,29 @@ elif st.session_state.stage == 5:
 【誕生日パーソナリティ】
 称号：{profile['title']}
 本質：{profile['core']}
-強み：{', '.join(profile['strengths'])}
-気をつけたいポイント：{', '.join(profile['pitfalls'])}
-運が伸びるコツ：{profile['growth']}
-合言葉：{profile['mantra']}
 
-【誕生タロット（人生の軸）】：{birth_card_name}
-【今日のタロット（今日のテーマ）】：{card_name}
+【誕生タロット】：{birth_card_name}
+【今日のタロット】：{card_name}
 
-【鑑定ルール】
-・誕生日パーソナリティから「この人らしさ」をやさしく伝える
-・その人らしさ × 今日のカードを掛け合わせて語る
-・{fortune_topic}にフォーカスし、今日できる行動に落とす
-・説教せず、寄り添いと励ましを大切にする
-
-【出力形式】
-■ あなたの本質（誕生日占い）
-■ 今回このカードが出た意味
-■ {fortune_topic}についてのメッセージ
-■ 今のあなたへの一言メッセージ
-■ 今日の開運アクション（3つ）
+前向きなアドバイスと開運アクションを教えてください。
 """
 
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
                 response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": prompt}],
-    max_tokens=900
-)
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=900
+                )
 
-# ←★ここから追加★
-text = response.choices[0].message.content.strip()
-
-# 「■」見出しをMarkdownの見出しに変換
-text = text.replace("■ ", "\n### ").replace("■", "\n### ")
-
-st.session_state.reading_text = text
-# ←★ここまで★
-
+            # ★ここ重要：必ず button の中
+            text = response.choices[0].message.content.strip()
+            text = text.replace("■ ", "\n### ").replace("■", "\n### ")
+            st.session_state.reading_text = text
 
             st.session_state.stage = 6
             st.rerun()
+
 
 # --- stage 6: 結果表示 ---
 elif st.session_state.stage == 6:
@@ -511,6 +491,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
 
