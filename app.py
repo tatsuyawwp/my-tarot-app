@@ -426,7 +426,7 @@ elif st.session_state.stage == 5:
 
     if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
         if not api_key:
-            st.error("APIキーが設定されていません。")
+            st.error("APIキーが設定されていません。Secretsを確認してください。")
         elif not nickname:
             st.warning("ニックネームを入れてください。")
         else:
@@ -446,6 +446,7 @@ elif st.session_state.stage == 5:
 【相談者情報】
 ニックネーム：{nickname}
 占いたい内容：{fortune_topic}
+気になっていること：{one_line if one_line else "（入力なし）"}
 
 【誕生日パーソナリティ】
 称号：{profile['title']}
@@ -460,11 +461,12 @@ elif st.session_state.stage == 5:
 
 【鑑定ルール】
 ・誕生日パーソナリティから「この人らしさ」をやさしく伝える
-・その人らしさ × 今日のカードを掛け合わせて語る
+・その人らしさ × 今日のカードを掛け合わせて語る（別々に説明しない）
+・{topic_guide}
 ・{fortune_topic}にフォーカスし、今日できる行動に落とす
 ・説教せず、寄り添いと励ましを大切にする
 
-【出力形式】
+【出力形式】（必ずこの順番）
 ■ あなたの本質（誕生日占い）
 ■ 今回このカードが出た意味
 ■ {fortune_topic}についてのメッセージ
@@ -484,13 +486,40 @@ elif st.session_state.stage == 5:
             st.rerun()
 
 
+# --- stage 6: 結果表示 ---
+elif st.session_state.stage == 6:
+    card_name = st.session_state.selected_card_name
+    card_url = TAROT_DATA[card_name]
+
+    st.subheader(f"✨ {nickname} さんの鑑定結果")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        if birth_card_url:
+            st.image(birth_card_url, use_container_width=True)
+            st.caption(f"誕生カード: {birth_card_name}")
+    with c2:
+        st.image(card_url, use_container_width=True)
+        st.caption(f"今日のカード: {card_name}")
+
+    st.divider()
+
+    if st.session_state.reading_text:
+        st.markdown(
+            f'<div class="result-box">{st.session_state.reading_text}</div>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.warning("鑑定結果がありません。もう一度「鑑定する」を押してください。")
+
+    # --- SNSシェア・拡散機能（結果画面に表示するのが正解） ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
-    
-    import urllib.parse
+
     share_text = f"【神秘の誕生日タロット】今日のカードは『{card_name}』でした！🔮 #AIタロット"
     encoded_text = urllib.parse.quote(share_text)
-    share_url = "https://my-tarot-app.streamlit.app/" # あなたのURL
+
+    share_url = "https://my-tarot-app.streamlit.app/"  # ←あなたのStreamlitアプリURLに変更
     encoded_url = urllib.parse.quote(share_url)
 
     sns_html = f"""
@@ -513,14 +542,9 @@ elif st.session_state.stage == 5:
     st.info("📸 結果をスクショしてSNSに投稿してね！ #AIタロット")
 
     st.divider()
-    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
-
-
-
-
-
-
-
-
-
-
+    st.link_button(
+        "✨ 個人鑑定の詳細・お申し込みはこちら",
+        "https://coconala.com/",
+        use_container_width=True,
+        type="primary"
+    )
