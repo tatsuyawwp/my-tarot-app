@@ -407,7 +407,7 @@ elif st.session_state.stage == 5:
     st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
     st.write(f"**伸びる条件:** {profile['growth']}")
     st.write(f"**合言葉:** {profile['mantra']}")
-    st.write(f"**口調トーン:** {profile['tone']}")
+  
 
     st.divider()
 
@@ -545,4 +545,5 @@ elif st.session_state.stage == 6:
     st.link_button("🐦 X(Twitter)で結果をシェアする", x_share_link, use_container_width=True)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
