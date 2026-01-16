@@ -421,7 +421,7 @@ elif st.session_state.stage == 5:
     st.divider()
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-    if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
+        if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
         if not api_key:
             st.error("APIキーが設定されていません。")
         elif not nickname:
@@ -434,12 +434,11 @@ elif st.session_state.stage == 5:
                 "bold": "頼りがいのある口調"
             }.get(profile["tone"], "やわらかく包む口調")
 
-            # プロンプト作成（ここを閉じ忘れるとエラーになります）
-           prompt = f"""
+            prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
-相談者の味方として、対面で語りかけるように温かく、具体的に導いてください。
-決して不安を煽らず、恐怖表現や「不幸になる」などの断定は禁止です。
-口調は「{tone_hint}」。上品で人間味があり、頼りがいのある話し方にしてください。
+相談者の味方として、対面で語りかけるように温かく導いてください。
+不安を煽る表現や断定的な不幸表現は禁止です。
+口調は「{tone_hint}」。人間味があり、頼りがいのある語り口にしてください。
 
 【相談者情報】
 ニックネーム：{nickname}
@@ -457,25 +456,30 @@ elif st.session_state.stage == 5:
 【今日のタロット（今日のテーマ）】：{card_name}
 
 【鑑定ルール】
-・まず「誕生日パーソナリティ」から、この人の“らしさ”をやさしく要約する
-・次に「その人らしさ × 今日のカード」が出た意味を、掛け合わせて語る（別々に説明しない）
-・占いたい内容（{fortune_topic}）にフォーカスし、抽象論で終わらせず「今日できる行動」に落とす
-・言葉は寄り添いと励ましを中心に。説教っぽくしない
-・最後は合言葉「{profile['mantra']}」で締めて、安心感を残す
+・まず誕生日パーソナリティから「この人らしさ」をやさしく伝える
+・次に「その人らしさ × 今日のカード」が出た意味を掛け合わせて語る
+・{fortune_topic}にフォーカスし、今日すぐできる行動に落とす
+・説教せず、寄り添いと励ましを大切にする
 
-【出力形式】（必ずこの順番・見出しもそのまま）
+【出力形式】
 ■ あなたの本質（誕生日占い）
-■ 今回このカードが出た意味（本質×カード）
-■ {fortune_topic}についてのメッセージ（具体的に）
-■ 今のあなたへの一言メッセージ（やさしく背中を押す）
-■ 今日の開運アクション（3つ：短く、すぐできる）
+■ 今回このカードが出た意味
+■ {fortune_topic}についてのメッセージ
+■ 今のあなたへの一言メッセージ
+■ 今日の開運アクション（3つ）
 """
 
-    st.divider()
-    if st.session_state.reading_text:
-        st.markdown(f'<div class="result-box">{st.session_state.reading_text}</div>', unsafe_allow_html=True)
+            client = OpenAI(api_key=api_key)
+            with st.spinner("星の声を聴いています..."):
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                st.session_state.reading_text = response.choices[0].message.content
 
-    # --- SNSシェア・拡散機能 ---
+            st.session_state.stage = 6
+            st.rerun()
+
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
     
@@ -506,6 +510,7 @@ elif st.session_state.stage == 5:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
+
 
 
 
