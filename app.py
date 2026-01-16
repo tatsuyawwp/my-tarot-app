@@ -435,9 +435,11 @@ elif st.session_state.stage == 5:
             }.get(profile["tone"], "やわらかく包む口調")
 
             # プロンプト作成（ここを閉じ忘れるとエラーになります）
-            prompt = f"""
+           prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
-口調は「{tone_hint}」。文章は神秘的で上品に。
+相談者の味方として、対面で語りかけるように温かく、具体的に導いてください。
+決して不安を煽らず、恐怖表現や「不幸になる」などの断定は禁止です。
+口調は「{tone_hint}」。上品で人間味があり、頼りがいのある話し方にしてください。
 
 【相談者情報】
 ニックネーム：{nickname}
@@ -445,39 +447,29 @@ elif st.session_state.stage == 5:
 
 【誕生日パーソナリティ】
 称号：{profile['title']}
-核：{profile['core']}
+本質：{profile['core']}
+強み：{', '.join(profile['strengths'])}
+気をつけたいポイント：{', '.join(profile['pitfalls'])}
+運が伸びるコツ：{profile['growth']}
+合言葉：{profile['mantra']}
 
-【誕生タロット】：{birth_card_name}
-【今日のタロット】：{card_name}
+【誕生タロット（人生の軸）】：{birth_card_name}
+【今日のタロット（今日のテーマ）】：{card_name}
 
-上記を掛け合わせて、前向きなアドバイスと開運アクション3つを教えてください。
+【鑑定ルール】
+・まず「誕生日パーソナリティ」から、この人の“らしさ”をやさしく要約する
+・次に「その人らしさ × 今日のカード」が出た意味を、掛け合わせて語る（別々に説明しない）
+・占いたい内容（{fortune_topic}）にフォーカスし、抽象論で終わらせず「今日できる行動」に落とす
+・言葉は寄り添いと励ましを中心に。説教っぽくしない
+・最後は合言葉「{profile['mantra']}」で締めて、安心感を残す
+
+【出力形式】（必ずこの順番・見出しもそのまま）
+■ あなたの本質（誕生日占い）
+■ 今回このカードが出た意味（本質×カード）
+■ {fortune_topic}についてのメッセージ（具体的に）
+■ 今のあなたへの一言メッセージ（やさしく背中を押す）
+■ 今日の開運アクション（3つ：短く、すぐできる）
 """
-            # ↑ ここで """ を確実に閉じるのが重要です
-
-            client = OpenAI(api_key=api_key)
-            with st.spinner("星の声を聴いています..."):
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                st.session_state.reading_text = response.choices[0].message.content
-
-            st.session_state.stage = 6
-            st.rerun()
-
-# --- stage 6: 結果表示 ---
-elif st.session_state.stage == 6:
-    card_name = st.session_state.selected_card_name
-    card_url = TAROT_DATA[card_name]
-
-    st.subheader(f"✨ {nickname} さんの鑑定結果")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        if birth_card_url:
-            st.image(birth_card_url, use_container_width=True, caption=f"誕生カード: {birth_card_name}")
-    with c2:
-        st.image(card_url, use_container_width=True, caption=f"今日のカード: {card_name}")
 
     st.divider()
     if st.session_state.reading_text:
@@ -514,6 +506,7 @@ elif st.session_state.stage == 6:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
+
 
 
 
