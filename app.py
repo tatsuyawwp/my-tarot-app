@@ -527,11 +527,7 @@ elif st.session_state.stage == 5:
                 )
                 st.session_state.reading_text = response.choices[0].message.content
 
-            st.session_state.stage = 6
-            st.rerun()
-
-# --- stage 6: 結果表示 ---
-elif st.session_state.stage == 6:
+            elif st.session_state.stage == 6:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
 
@@ -541,18 +537,18 @@ elif st.session_state.stage == 6:
     with c1:
         st.write("### 🎂 誕生カード")
         if birth_card_url:
-            st.image(birth_card_url, width=220)
+            st.image(birth_card_url, use_container_width=True)
         st.caption(birth_card_name)
     with c2:
         st.write("### 🔮 今日のカード")
-        st.image(card_url, width=220)
+        st.image(card_url, use_container_width=True)
         st.caption(card_name)
 
     st.divider()
 
     st.write("### 🎂 誕生日パーソナリティ（365日）")
     st.write(f"**{birthday_key}｜称号:** {profile['title']}")
-    st.write(f"**本質:** {profile['core']}")
+    st.write(f"**核:** {profile['core']}")
     st.write(f"**強み:** {', '.join(profile['strengths'])}")
     st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
     st.write(f"**伸びる条件:** {profile['growth']}")
@@ -560,64 +556,34 @@ elif st.session_state.stage == 6:
 
     st.divider()
 
-    st.write(st.session_state.reading_text)
-    st.success("鑑定が完了しました！")
+    # 鑑定文の表示（枠付き）
+    if st.session_state.reading_text:
+        st.markdown(f'<div class="result-box">{st.session_state.reading_text}</div>', unsafe_allow_html=True)
+        st.success("鑑定が完了しました！")
 
-    st.divider()
-    st.write("### 🔒 もっと深く占う（有料版で追加予定）")
-    st.write("- 過去/現在/未来（3枚引き）\n- 相手の気持ち\n- 具体的な行動プラン\n- 追加で1枚（アドバイスカード）")
-
-    st.divider()
-    st.write("### 🔮 もっと深いお悩みをお持ちですか？")
-    my_sales_url = "https://coconala.com/"
     # --- SNSシェア・拡散機能（ここから差し替え） ---
-   【誕生日パーソナリティ（{birthday_key}）】
-称号：{profile['title']}
-核：{profile['core']}
-強み：{', '.join(profile['strengths'])}
-注意点：{', '.join(profile['pitfalls'])}
-伸びる条件：{profile['growth']}
-合言葉：{profile['mantra']}
-"""
-  【誕生日パーソナリティ（{birthday_key}）】
-称号：{profile['title']}
-核：{profile['core']}
-強み：{', '.join(profile['strengths'])}
-注意点：{', '.join(profile['pitfalls'])}
-伸びる条件：{profile['growth']}
-合言葉：{profile['mantra']}
-"""
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
+    st.write('<p class="small-note">※シェアによってあなたの個人情報が作者に伝わることはありません。</p>', unsafe_allow_html=True)
 
     # シェア用の文章とURLの準備
     share_text = f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い"
+    import urllib.parse
     encoded_text = urllib.parse.quote(share_text)
-    share_url = "https://my-tarot-app.streamlit.app/" # あなたのアプリURL
+    
+    # 実際のアプリURLに書き換えてください
+    share_url = "https://my-tarot-app.streamlit.app/" 
     encoded_url = urllib.parse.quote(share_url)
 
-    # HTMLでのカスタムボタン表示
+    # SNSロゴボタン（Instagram/TikTokは公式へ）
     sns_html = f"""
     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
         <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">
-            <i class="fa-brands fa-x-twitter"></i> X (Twitter)
-        </a>
-        <a href="https://www.threads.net/intent/post?text={encoded_text}%20{encoded_url}" target="_blank" class="sns-button btn-threads">
-            <i class="fa-brands fa-threads"></i> Threads
+            <i class="fa-brands fa-x-twitter"></i> Xでシェア
         </a>
         <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line">
-            <i class="fa-brands fa-line"></i> LINE
+            <i class="fa-brands fa-line"></i> LINEで送る
         </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}" target="_blank" class="sns-button btn-fb">
-            <i class="fa-brands fa-facebook"></i> Facebook
-        </a>
-    </div>
-
-    <div style="margin-top: 20px;">
-        <h4 style="font-size: 1rem; opacity: 0.8;">📱 SNSで結果をシェアする</h4>
-    </div>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
         <a href="https://www.instagram.com/" target="_blank" class="sns-button btn-insta">
             <i class="fa-brands fa-instagram"></i> Instagram
         </a>
@@ -627,17 +593,12 @@ elif st.session_state.stage == 6:
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
-    st.info("""
-📸 **スクショで幸運をシェア！**
-この鑑定結果をスクリーンショットして、InstagramのストーリーやTikTokにアップしてみませんか？
-ハッシュタグ **#AIタロット** を付けて投稿すると、あなたの運命がより輝くかもしれません。
-""")
-    # --- ここまで ---
-    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
+    st.info("📸 **結果をスクショしてシェア！**\\nハッシュタグ #AIタロット を付けてSNSに投稿してね！")
 
-
-
+    st.divider()
+    st.write("### 🕯️ さらなる深淵へ")
+    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
 
 
 
