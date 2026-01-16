@@ -116,7 +116,8 @@ st.markdown("""
     color: #333;
 st.markdown("""
 <style>
-/* 追加：結果を読みやすく */
+/* 追加: 結果を読みやすく */
+
 .result-title{
   font-size: 1.15rem;
   font-weight: 800;
@@ -544,5 +545,6 @@ st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
