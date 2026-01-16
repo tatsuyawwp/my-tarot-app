@@ -295,7 +295,7 @@ elif st.session_state.stage == 5:
     st.divider()
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-   if st.button("🔮 鑑定する（無料・簡易）"):
+  if st.button("🔮 鑑定する（無料・簡易）"):
     if not api_key:
         st.error("APIキーが設定されていません。Secretsを確認してください。")
     else:
@@ -337,6 +337,7 @@ elif st.session_state.stage == 5:
 
             st.session_state.reading_text = response.choices[0].message.content
 
+
             st.session_state.stage = 6
             st.rerun()
 
@@ -368,6 +369,7 @@ elif st.session_state.stage == 6:
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
   
+
 
 
 
