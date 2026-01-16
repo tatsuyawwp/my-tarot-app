@@ -506,13 +506,13 @@ elif st.session_state.stage == 5:
 
 【鑑定ルール】
 ・誕生日パーソナリティ＋誕生カードで「この人の核」を1〜2文で提示
-・次に「核 × 今日のカード」の意味を掛け算で語る（別々に説明しない）
+・次に「本質 × 今日のカード」の意味を掛け算で語る（別々に説明しない）
 ・{topic_guide}
 ・抽象論で終わらせず、今日すぐできる行動に落とす
 ・恐怖表現、断定的な不幸表現は禁止。前向きに再解釈して寄り添う
 
 【出力形式】（必ずこの順番）
-■ あなたの核（誕生日パーソナリティ＋誕生タロット）
+■ あなたの本質（誕生日パーソナリティ＋誕生タロット）
 ■ 今日のカードが出た意味（掛け算）
 ■ {fortune_topic}についてのメッセージ（具体的に）
 ■ 今のあなたへの一言メッセージ（寄り添い・励まし）
@@ -552,7 +552,7 @@ elif st.session_state.stage == 6:
 
     st.write("### 🎂 誕生日パーソナリティ（365日）")
     st.write(f"**{birthday_key}｜称号:** {profile['title']}")
-    st.write(f"**核:** {profile['core']}")
+    st.write(f"**本質:** {profile['core']}")
     st.write(f"**強み:** {', '.join(profile['strengths'])}")
     st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
     st.write(f"**伸びる条件:** {profile['growth']}")
@@ -634,6 +634,7 @@ elif st.session_state.stage == 6:
 """)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
