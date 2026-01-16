@@ -114,6 +114,30 @@ st.markdown("""
     margin: 15px 0;
     line-height: 1.7;
     color: #333;
+st.markdown("""
+<style>
+/* 追加：結果を読みやすく */
+.result-title{
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.result-box{
+  background: #fbfbfd;
+  border-left: 6px solid #d4af37;
+  padding: 18px 18px;
+  border-radius: 12px;
+  line-height: 1.95;
+  font-size: 1.03rem;
+  color: #222;
+}
+.result-box p{ margin: 0.55em 0; }
+.result-box ul{ margin: 0.5em 0 0.8em 1.2em; }
+.result-box li{ margin: 0.35em 0; }
+.result-box strong{ color:#111; }
+</style>
+""", unsafe_allow_html=True)
+    
 }
 </style>
 """, unsafe_allow_html=True)
@@ -474,11 +498,20 @@ elif st.session_state.stage == 5:
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=900
-                )
-                st.session_state.reading_text = response.choices[0].message.content
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    max_tokens=900
+)
+
+# ←★ここから追加★
+text = response.choices[0].message.content.strip()
+
+# 「■」見出しをMarkdownの見出しに変換
+text = text.replace("■ ", "\n### ").replace("■", "\n### ")
+
+st.session_state.reading_text = text
+# ←★ここまで★
+
 
             st.session_state.stage = 6
             st.rerun()
@@ -489,15 +522,10 @@ elif st.session_state.stage == 6:
     card_url = TAROT_DATA[card_name]
 
     st.subheader(f"✨ {nickname} さんの鑑定結果")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.image(birth_card_url, use_container_width=True, caption=f"誕生カード: {birth_card_name}")
-    with c2:
-        st.image(card_url, use_container_width=True, caption=f"今日のカード: {card_name}")
-
-    st.divider()
-    st.markdown(f'<div class="result-box">{st.session_state.reading_text}</div>', unsafe_allow_html=True)
+st.markdown('<div class="result-title">🔮 鑑定メッセージ</div>', unsafe_allow_html=True)
+st.markdown(f"<div class='result-box'>", unsafe_allow_html=True)
+st.markdown(st.session_state.reading_text)
+st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
@@ -516,4 +544,5 @@ elif st.session_state.stage == 6:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
