@@ -438,7 +438,7 @@ elif st.session_state.stage == 5:
 
     st.write("### 🎂 あなたの誕生日パーソナリティ（365日）")
     st.write(f"**{birthday_key}｜称号:** {profile['title']}")
-    st.write(f"**核:** {profile['core']}")
+    st.write(f"**本質:** {profile['core']}")
     st.write(f"**強み:** {', '.join(profile['strengths'])}")
     st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
     st.write(f"**伸びる条件:** {profile['growth']}")
@@ -475,7 +475,7 @@ elif st.session_state.stage == 5:
             profile_text = f"""
 【誕生日パーソナリティ（{birthday_key}）】
 称号：{profile['title']}
-核：{profile['core']}
+本質：{profile['core']}
 強み：{', '.join(profile['strengths'])}
 注意点：{', '.join(profile['pitfalls'])}
 伸びる条件：{profile['growth']}
@@ -634,6 +634,7 @@ elif st.session_state.stage == 6:
 """)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
