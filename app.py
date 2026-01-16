@@ -48,6 +48,21 @@ TAROT_DATA = {
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
+if not api_key:
+    st.error("APIキーが設定されていません。")
+else:
+    client = OpenAI(api_key=api_key)
+
+    with st.spinner("星の声を聴いています..."):
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=900
+        )
+
+    st.session_state.reading_text = response.choices[0].message.content
+
+
 # =========================
 # CSS（見た目）
 # =========================
@@ -440,15 +455,15 @@ elif st.session_state.stage == 5:
             prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 相談者の味方として、対面で語りかけるように温かく導いてください。
-不安を煽る表現や断定的な不幸表現は禁止です。
-口調は「{tone_hint}」。人間味があり、頼りがいのある語り口にしてください。
+不安を煽る表現・恐怖表現・断定的な不幸表現は禁止です。
+口調は「{tone_hint}」。やさしく、でも頼りがいのある言葉で。
 
 【相談者情報】
 ニックネーム：{nickname}
 占いたい内容：{fortune_topic}
 気になっていること：{one_line if one_line else "（入力なし）"}
 
-【誕生日パーソナリティ】
+【誕生日パーソナリティ（その人の土台）】
 称号：{profile['title']}
 本質：{profile['core']}
 強み：{', '.join(profile['strengths'])}
@@ -459,20 +474,30 @@ elif st.session_state.stage == 5:
 【誕生タロット（人生の軸）】：{birth_card_name}
 【今日のタロット（今日のテーマ）】：{card_name}
 
-【鑑定ルール】
-・誕生日パーソナリティから「この人らしさ」をやさしく伝える
-・その人らしさ × 今日のカードを掛け合わせて語る（別々に説明しない）
+【鑑定ルール（重要）】
+・誕生日パーソナリティ＋誕生タロットで「この人の土台」を短く描写（2〜3文）
+・次に「土台 × 今日のカード」を“掛け算”で説明（別々に説明しない）
+・1枚のカードから、以下の3層を必ず引き出す（カードは増やさない）
+  ①テーマ（追い風）
+  ②影（つまずきやすい癖：怖く言わない）
+  ③アドバイス（今日できる一手）
 ・{topic_guide}
-・{fortune_topic}にフォーカスし、今日できる行動に落とす
-・説教せず、寄り添いと励ましを大切にする
+・抽象論で終わらず「具体例」を必ず入れる
+  - 恋愛：送る/言う一言例を1つ
+  - 仕事：優先順位を3つ（短く）
+  - 今日の運勢：朝/昼/夜の過ごし方を1行ずつ
+・最後に「深掘り質問」を2つ入れて、もっと占いたくなる余韻を作る（無料版の範囲で）
 
-【出力形式】（必ずこの順番）
-■ あなたの本質（誕生日占い）
-■ 今回このカードが出た意味
-■ {fortune_topic}についてのメッセージ
-■ 今のあなたへの一言メッセージ
-■ 今日の開運アクション（3つ）
+【出力形式（必ずこの順番・見出しそのまま）】
+■ あなたの土台（誕生日×誕生タロット）
+■ 今日のカードが示す3層（テーマ／影／アドバイス）
+■ {fortune_topic}の具体メッセージ（例つき）
+■ 今のあなたへの一言メッセージ（寄り添い＋背中を押す）
+■ 今日の開運アクション（3つ：すぐできる）
+■ 深掘り質問（2つ）
+最後の一行は合言葉「{profile['mantra']}」で締める
 """
+
 
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
@@ -548,3 +573,4 @@ elif st.session_state.stage == 6:
         use_container_width=True,
         type="primary"
     )
+
