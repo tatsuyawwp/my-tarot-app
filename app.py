@@ -618,10 +618,10 @@ elif st.session_state.stage == 6:
     </div>
     
     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-        <a href="https://www.instagram.com/あなたのID" target="_blank" class="sns-button btn-insta">
+        <a href="https://www.instagram.com/" target="_blank" class="sns-button btn-insta">
             <i class="fa-brands fa-instagram"></i> Instagram
         </a>
-        <a href="https://www.tiktok.com/@あなたのID" target="_blank" class="sns-button btn-tiktok">
+        <a href="https://www.tiktok.com/" target="_blank" class="sns-button btn-tiktok">
             <i class="fa-brands fa-tiktok"></i> TikTok
         </a>
     </div>
@@ -629,6 +629,7 @@ elif st.session_state.stage == 6:
     st.markdown(sns_html, unsafe_allow_html=True)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
