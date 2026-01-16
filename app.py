@@ -614,7 +614,7 @@ elif st.session_state.stage == 6:
     </div>
 
     <div style="margin-top: 20px;">
-        <h4 style="font-size: 1rem; opacity: 0.8;">📱 Creator Links</h4>
+        <h4 style="font-size: 1rem; opacity: 0.8;">📱 SNSで結果をシェアする</h4>
     </div>
     
     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
@@ -627,8 +627,14 @@ elif st.session_state.stage == 6:
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
+    st.info("""
+📸 **スクショで幸運をシェア！**
+この鑑定結果をスクリーンショットして、InstagramのストーリーやTikTokにアップしてみませんか？
+ハッシュタグ **#AIタロット** を付けて投稿すると、あなたの運命がより輝くかもしれません。
+""")
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
