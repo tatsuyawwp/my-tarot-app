@@ -6,7 +6,7 @@ from datetime import date
 # 1. 準備：タロットカードデータ（リンクを非常に安定したものに固定）
 TAROT_DATA = {
     TAROT_DATA = {
-    "愚者": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/%E6%84%9A%E8%80%85.png?raw=true",
+    "愚者": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true",
     "魔術師": "https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg",
     "女教皇": "https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_02_High_Priestess.jpg",
     "女帝": "https://upload.wikimedia.org/wikipedia/commons/a/af/RWS_Tarot_03_Empress.jpg",
@@ -83,4 +83,5 @@ if st.button("運命を占う"):
         st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
     else:
         st.warning("ニックネームを入れてください。")
+
 
