@@ -425,7 +425,7 @@ elif st.session_state.stage == 5:
 
     if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
         if not api_key:
-            st.error("APIキーが設定されていません。Secretsを確認してください。")
+            st.error("APIキーが設定されていません。")
         elif not nickname:
             st.warning("ニックネームを入れてください。")
         else:
@@ -439,15 +439,14 @@ elif st.session_state.stage == 5:
             prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 相談者の味方として、対面で語りかけるように温かく導いてください。
-不安を煽る表現・恐怖表現・断定的な不幸表現は禁止です。
-口調は「{tone_hint}」。やさしく、でも頼りがいのある言葉で。
+不安を煽る表現や断定的な不幸表現は禁止です。
+口調は「{tone_hint}」。人間味があり、頼りがいのある語り口にしてください。
 
 【相談者情報】
 ニックネーム：{nickname}
 占いたい内容：{fortune_topic}
-気になっていること：{one_line if one_line else "（入力なし）"}
 
-【誕生日パーソナリティ（その人の土台）】
+【誕生日パーソナリティ】
 称号：{profile['title']}
 本質：{profile['core']}
 強み：{', '.join(profile['strengths'])}
@@ -458,44 +457,31 @@ elif st.session_state.stage == 5:
 【誕生タロット（人生の軸）】：{birth_card_name}
 【今日のタロット（今日のテーマ）】：{card_name}
 
-【鑑定ルール（重要）】
-・誕生日パーソナリティ＋誕生タロットで「この人の土台」を短く描写（2〜3文）
-・次に「土台 × 今日のカード」を“掛け算”で説明（別々に説明しない）
-・1枚のカードから、以下の3層を必ず引き出す（カードは増やさない）
-  ①テーマ（追い風）
-  ②影（つまずきやすい癖：怖く言わない）
-  ③アドバイス（今日できる一手）
-・{topic_guide}
-・抽象論で終わらず「具体例」を必ず入れる
-  - 恋愛：送る/言う一言例を1つ
-  - 仕事：優先順位を3つ（短く）
-  - 今日の運勢：朝/昼/夜の過ごし方を1行ずつ
-・最後に「深掘り質問」を2つ入れて、もっと占いたくなる余韻を作る（無料版の範囲で）
+【鑑定ルール】
+・誕生日パーソナリティから「この人らしさ」をやさしく伝える
+・その人らしさ × 今日のカードを掛け合わせて語る
+・{fortune_topic}にフォーカスし、今日できる行動に落とす
+・説教せず、寄り添いと励ましを大切にする
 
-【出力形式（必ずこの順番・見出しそのまま）】
-■ あなたの土台（誕生日×誕生タロット）
-■ 今日のカードが示す3層（テーマ／影／アドバイス）
-■ {fortune_topic}の具体メッセージ（例つき）
-■ 今のあなたへの一言メッセージ（寄り添い＋背中を押す）
-■ 今日の開運アクション（3つ：すぐできる）
-■ 深掘り質問（2つ）
-最後の一行は合言葉「{profile['mantra']}」で締める
+【出力形式】
+■ あなたの本質（誕生日占い）
+■ 今回このカードが出た意味
+■ {fortune_topic}についてのメッセージ
+■ 今のあなたへの一言メッセージ
+■ 今日の開運アクション（3つ）
 """
 
-
             client = OpenAI(api_key=api_key)
-with st.spinner("星の声を聴いています..."):
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=900
-    )
-st.session_state.reading_text = response.choices[0].message.content
-
+            with st.spinner("星の声を聴いています..."):
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=900
+                )
+                st.session_state.reading_text = response.choices[0].message.content
 
             st.session_state.stage = 6
             st.rerun()
-
 
 # --- stage 6: 結果表示 ---
 elif st.session_state.stage == 6:
@@ -506,58 +492,28 @@ elif st.session_state.stage == 6:
 
     c1, c2 = st.columns(2)
     with c1:
-        if birth_card_url:
-            st.image(birth_card_url, use_container_width=True)
-            st.caption(f"誕生カード: {birth_card_name}")
+        st.image(birth_card_url, use_container_width=True, caption=f"誕生カード: {birth_card_name}")
     with c2:
-        st.image(card_url, use_container_width=True)
-        st.caption(f"今日のカード: {card_name}")
+        st.image(card_url, use_container_width=True, caption=f"今日のカード: {card_name}")
 
     st.divider()
+    st.markdown(f'<div class="result-box">{st.session_state.reading_text}</div>', unsafe_allow_html=True)
 
-    if st.session_state.reading_text:
-        st.markdown(
-            f'<div class="result-box">{st.session_state.reading_text}</div>',
-            unsafe_allow_html=True
-        )
-    else:
-        st.warning("鑑定結果がありません。もう一度「鑑定する」を押してください。")
-
-    # --- SNSシェア・拡散機能（結果画面に表示するのが正解） ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
     share_text = f"【神秘の誕生日タロット】今日のカードは『{card_name}』でした！🔮 #AIタロット"
     encoded_text = urllib.parse.quote(share_text)
-
-    share_url = "https://my-tarot-app.streamlit.app/"  # ←あなたのStreamlitアプリURLに変更
+    share_url = "https://my-tarot-app.streamlit.app/"
     encoded_url = urllib.parse.quote(share_url)
 
-    sns_html = f"""
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-        <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">
-            <i class="fa-brands fa-x-twitter"></i> Xでシェア
-        </a>
-        <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line">
-            <i class="fa-brands fa-line"></i> LINEで送る
-        </a>
-        <a href="https://www.instagram.com/" target="_blank" class="sns-button btn-insta">
-            <i class="fa-brands fa-instagram"></i> Instagram
-        </a>
-        <a href="https://www.tiktok.com/" target="_blank" class="sns-button btn-tiktok">
-            <i class="fa-brands fa-tiktok"></i> TikTok
-        </a>
+    st.markdown(f"""
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">Xでシェア</a>
+      <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line">LINEで送る</a>
     </div>
-    """
-    st.markdown(sns_html, unsafe_allow_html=True)
-    st.info("📸 結果をスクショしてSNSに投稿してね！ #AIタロット")
+    """, unsafe_allow_html=True)
 
     st.divider()
-    st.link_button(
-        "✨ 個人鑑定の詳細・お申し込みはこちら",
-        "https://coconala.com/",
-        use_container_width=True,
-        type="primary"
-    )
-
+    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
 
