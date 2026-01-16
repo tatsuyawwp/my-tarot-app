@@ -322,7 +322,7 @@ elif st.session_state.stage == 5:
 日本語で、占い師が対面で語りかけるように鑑定してください。
 """
 
-                )
+                
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": prompt}]
@@ -360,4 +360,5 @@ elif st.session_state.stage == 6:
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
   
+
 
