@@ -89,8 +89,10 @@ st.markdown("""
   font-weight:bold;
   font-size:14px;
   width:100%;
+  box-sizing:border-box;
   transition:0.3s;
 }
+.sns-button i{ margin-right:8px; font-size:18px; }
 .sns-button:hover{
   opacity:0.85;
   transform:translateY(-2px);
@@ -104,34 +106,6 @@ st.markdown("""
   background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
 }
 .btn-tiktok{ background:#010101; }
-</style>
-""", unsafe_allow_html=True)
-
-<style>
-/* 追加: 結果を読みやすく */
-
-.result-title{
-  font-size: 1.15rem;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-.result-box{
-  background: #fbfbfd;
-  border-left: 6px solid #d4af37;
-  padding: 18px 18px;
-  border-radius: 12px;
-  line-height: 1.95;
-  font-size: 1.03rem;
-  color: #222;
-}
-.result-box p{ margin: 0.55em 0; }
-.result-box ul{ margin: 0.5em 0 0.8em 1.2em; }
-.result-box li{ margin: 0.35em 0; }
-.result-box strong{ color:#111; }
-</style>
-""", unsafe_allow_html=True)
-    
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -537,6 +511,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
 
