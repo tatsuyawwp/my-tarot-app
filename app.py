@@ -47,22 +47,6 @@ TAROT_DATA = {
 # =========================
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
-
-if not api_key:
-    st.error("APIキーが設定されていません。")
-else:
-    client = OpenAI(api_key=api_key)
-
-    with st.spinner("星の声を聴いています..."):
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=900
-        )
-
-    st.session_state.reading_text = response.choices[0].message.content
-
-
 # =========================
 # CSS（見た目）
 # =========================
@@ -500,12 +484,14 @@ elif st.session_state.stage == 5:
 
 
             client = OpenAI(api_key=api_key)
-            with st.spinner("星の声を聴いています..."):
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                st.session_state.reading_text = response.choices[0].message.content
+with st.spinner("星の声を聴いています..."):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=900
+    )
+st.session_state.reading_text = response.choices[0].message.content
+
 
             st.session_state.stage = 6
             st.rerun()
@@ -573,4 +559,5 @@ elif st.session_state.stage == 6:
         use_container_width=True,
         type="primary"
     )
+
 
