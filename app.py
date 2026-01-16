@@ -295,13 +295,14 @@ elif st.session_state.stage == 5:
     st.divider()
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-    if st.button("🔮 鑑定する（無料・簡易）"):
-        if not api_key:
-            st.error("APIキーが設定されていません。Secretsを確認してください。")
-        else:
-            client = OpenAI(api_key=api_key)
-            with st.spinner("星の声を聴いています..."):
-               prompt = f"""
+   if st.button("🔮 鑑定する（無料・簡易）"):
+    if not api_key:
+        st.error("APIキーが設定されていません。Secretsを確認してください。")
+    else:
+        client = OpenAI(api_key=api_key)
+        with st.spinner("星の声を聴いています..."):
+
+            prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 決して不安を煽らず、相談者の味方として語りかけてください。
 
@@ -315,7 +316,6 @@ elif st.session_state.stage == 5:
 ・まず「ライフパスナンバー」から、この人の本質的な性格をやさしく説明する
 ・次に「その性格の人だからこそ、このカードが出た理由」を語る
 ・占いたい内容（{fortune_topic}）にフォーカスして具体的に占う
-・{topic_guide}
 ・言葉は温かく、人間味があり、頼りがいのある口調にする
 ・恐怖表現や断定的な不幸表現は禁止
 ・前向きな再解釈と行動のヒントを必ず入れる
@@ -330,12 +330,12 @@ elif st.session_state.stage == 5:
 日本語で、占い師が対面で語りかけるように鑑定してください。
 """
 
-                
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                st.session_state.reading_text = response.choices[0].message.content
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            st.session_state.reading_text = response.choices[0].message.content
 
             st.session_state.stage = 6
             st.rerun()
@@ -368,6 +368,7 @@ elif st.session_state.stage == 6:
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
   
+
 
 
 
