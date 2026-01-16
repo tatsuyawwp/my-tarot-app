@@ -39,17 +39,9 @@ TAROT_DATA = {
     "世界": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true"
 }
 
-TOPIC_GUIDE = {
-    "今日の運勢": "今日1日の流れに焦点を当て、朝〜夜の過ごし方のコツも入れてください。",
-    "恋愛": "相手の気持ちを断定せず、距離の縮め方・言葉選び・やってはいけないことを具体的に。",
-    "仕事": "仕事の進め方、評価されるポイント、トラブル回避、今日の優先順位を具体的に。"
-}
-topic_guide = TOPIC_GUIDE[fortune_topic]
-
 # APIキー
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
-
 
 # =========================
 # ユーティリティ
@@ -60,16 +52,12 @@ def calculate_numerology(date_obj):
         digits = str(sum(int(d) for d in digits))
     return digits
 
-
 # =========================
-# CSS（フェード演出）
+# CSS（軽い演出）
 # =========================
 st.markdown("""
 <style>
-.fade-container {
-    width: 260px;
-    margin: 0 auto;
-}
+.fade-container { width: 260px; margin: 0 auto; }
 .fade-img {
     width: 100%;
     border-radius: 14px;
@@ -78,14 +66,9 @@ st.markdown("""
 }
 .hidden { opacity: 0; }
 .visible { opacity: 1; }
-
-.small-note {
-    opacity: 0.85;
-    font-size: 0.95rem;
-}
+.small-note { opacity: 0.85; font-size: 0.95rem; }
 </style>
 """, unsafe_allow_html=True)
-
 
 # =========================
 # Session State 初期化
@@ -95,27 +78,19 @@ st.markdown("""
 # 2=ミックス中
 # 3=ストップ後、候補提示（選ぶ）
 # 4=選んだカード（裏向き）
-# 5=フェードで表へ（開いた）
+# 5=表表示＆鑑定ボタン
 # 6=鑑定結果表示
 # =========================
 if "stage" not in st.session_state:
     st.session_state.stage = 0
-
 if "deck" not in st.session_state:
     st.session_state.deck = []
-
 if "candidates" not in st.session_state:
     st.session_state.candidates = []
-
 if "selected_card_name" not in st.session_state:
     st.session_state.selected_card_name = None
-
 if "reading_text" not in st.session_state:
     st.session_state.reading_text = None
-
-if "fade_step" not in st.session_state:
-    st.session_state.fade_step = 0
-
 
 def reset_all():
     st.session_state.stage = 0
@@ -123,11 +98,9 @@ def reset_all():
     st.session_state.candidates = []
     st.session_state.selected_card_name = None
     st.session_state.reading_text = None
-    st.session_state.fade_step = 0
-
 
 # =========================
-# 入力
+# 入力（fortune_topic は必ずここで定義）
 # =========================
 today = date.today()
 birthday = st.date_input(
@@ -138,6 +111,19 @@ birthday = st.date_input(
 )
 nickname = st.text_input("ニックネームを入力してください", placeholder="例：たろちゃん")
 
+fortune_topic = st.selectbox(
+    "占いたい内容を選んでください",
+    ["今日の運勢", "恋愛", "仕事"],
+    index=0
+)
+
+TOPIC_GUIDE = {
+    "今日の運勢": "今日1日の流れに焦点を当て、朝〜夜の過ごし方のコツも入れてください。",
+    "恋愛": "相手の気持ちを断定せず、距離の縮め方・言葉選び・やってはいけないことを具体的に。",
+    "仕事": "仕事の進め方、評価されるポイント、トラブル回避、今日の優先順位を具体的に。"
+}
+topic_guide = TOPIC_GUIDE.get(fortune_topic, "具体的で現実的なアドバイスを入れてください。")
+
 col_r1, col_r2 = st.columns([1, 2])
 with col_r1:
     if st.button("🔄 最初からやり直す"):
@@ -146,9 +132,7 @@ with col_r1:
 
 st.divider()
 
-# ライフパス
 life_path = calculate_numerology(birthday) if nickname else None
-
 
 # =========================
 # メインフロー
@@ -164,7 +148,6 @@ if st.session_state.stage == 0:
         if not nickname:
             st.warning("ニックネームを入れてください。")
         else:
-            # 山札作成→シャッフル
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
 
@@ -198,8 +181,6 @@ elif st.session_state.stage == 2:
     st.write("止めたいタイミングで下のボタンを押してください。")
 
     anim = st.empty()
-    # 裏面画像を “揺れてる感” で見せる（角丸＋少しだけサイズ変動）
-    # Streamlitは本アニメが弱いので、短いsleep+rerunで疑似演出
     wobble = random.choice([248, 252, 256, 260, 264])
 
     anim.markdown(f"""
@@ -209,7 +190,6 @@ elif st.session_state.stage == 2:
     """, unsafe_allow_html=True)
 
     if st.button("⏹️ ストップ（止める）"):
-        # 候補7枚を作る（重複なし）
         if not st.session_state.deck:
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
@@ -241,9 +221,9 @@ elif st.session_state.stage == 3:
                 <img src="{TAROT_BACK_URL}" class="fade-img visible">
             </div>
             """, unsafe_allow_html=True)
+
             if st.button("選ぶ", key=f"pick_{name}"):
                 st.session_state.selected_card_name = name
-                st.session_state.fade_step = 0
                 st.session_state.reading_text = None
                 st.session_state.stage = 4
                 st.rerun()
@@ -260,11 +240,10 @@ elif st.session_state.stage == 4:
     """, unsafe_allow_html=True)
 
     if st.button("✨ カードを開く"):
-        st.session_state.fade_step = 1
         st.session_state.stage = 5
         st.rerun()
 
-# --- stage 5: フェードで表へ ---
+# --- stage 5: 表表示＆鑑定 ---
 elif st.session_state.stage == 5:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
@@ -272,6 +251,7 @@ elif st.session_state.stage == 5:
     st.subheader("✨ カードが示されました…")
     st.image(card_url, width=240)
     st.caption(f"引いたカード: {card_name}")
+
     st.write(f"**{nickname} さんのライフパスナンバー:** {life_path}")
     st.write(f"**占いたい内容:** {fortune_topic}")
 
@@ -281,13 +261,15 @@ elif st.session_state.stage == 5:
     if st.button("🔮 鑑定する（無料・簡易）"):
         if not api_key:
             st.error("APIキーが設定されていません。Secretsを確認してください。")
+        elif not nickname:
+            st.warning("ニックネームを入れてください。")
         else:
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
-
                 prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 決して不安を煽らず、相談者の味方として語りかけてください。
+文章は人間味があり、優しく頼りがいのある口調にしてください（上から目線や説教口調は禁止）。
 
 【相談者情報】
 ニックネーム：{nickname}
@@ -295,34 +277,31 @@ elif st.session_state.stage == 5:
 占いたい内容：{fortune_topic}
 引いたタロットカード：{card_name}
 
-【鑑定ルール】
-・まず「ライフパスナンバー」から、この人の本質的な性格をやさしく説明する
-・次に「その性格の人だからこそ、このカードが出た理由」を語る
-・占いたい内容（{fortune_topic}）にフォーカスして具体的に占う
-・言葉は温かく、人間味があり、頼りがいのある口調にする
-・恐怖表現や断定的な不幸表現は禁止
-・前向きな再解釈と行動のヒントを必ず入れる
+【鑑定の狙い】
+・誕生日占い（ライフパス）とタロットを「別々に説明」せず、
+  「この性格のあなたに、このカードが出た意味」として掛け合わせて語ること。
+・不安を煽る言い方、断定的な不幸表現は禁止（怖い言い方はしない）。
+・{topic_guide}
+・抽象論だけで終わらせず、今日すぐできる行動に落とす。
 
-【出力形式】
+【出力形式】（必ずこの順番）
 ■ あなたの本質（誕生日占い）
-■ 今回このカードが出た意味
-■ {fortune_topic}についてのメッセージ
-■ 今のあなたへの一言メッセージ
-■ 今日の開運アクション（3つ）
+■ 今回このカードが出た意味（あなたの本質×カードの掛け算）
+■ {fortune_topic}についてのメッセージ（具体的に）
+■ 今のあなたへの一言メッセージ（寄り添い・励まし）
+■ 今日の開運アクション（3つ：短く、実行しやすく）
 
-日本語で、占い師が対面で語りかけるように鑑定してください。
+日本語で、対面の占い師がやさしく語りかけるように鑑定してください。
 """
 
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": prompt}]
                 )
-
                 st.session_state.reading_text = response.choices[0].message.content
 
             st.session_state.stage = 6
             st.rerun()
-
 
 # --- stage 6: 結果表示 ---
 elif st.session_state.stage == 6:
@@ -337,7 +316,7 @@ elif st.session_state.stage == 6:
         st.caption(f"引いたカード: {card_name}")
     with col2:
         st.write(f"**ライフパスナンバー:** {life_path}")
-        st.write("**質問:** 今日の自分に必要なメッセージは？")
+        st.write(f"**占いたい内容:** {fortune_topic}")
 
     st.write(st.session_state.reading_text)
     st.success("鑑定が完了しました！")
@@ -350,10 +329,6 @@ elif st.session_state.stage == 6:
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
-
-  
-
-
 
 
 
