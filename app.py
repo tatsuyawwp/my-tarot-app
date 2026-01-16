@@ -534,16 +534,48 @@ elif st.session_state.stage == 6:
     st.divider()
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
-    # --- ここからSNSシェア機能の差し込み ---
+    # --- SNSシェア・拡散機能（ここから差し替え） ---
     st.divider()
-    # シェア用の文章を作成（URLエンコード）
-    share_text = urllib.parse.quote(f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い")
-    # アプリのURL（ご自身のものに書き換えてください）
-    share_url = "https://my-tarot-app.streamlit.app/" 
-    x_share_link = f"https://twitter.com/intent/tweet?text={share_text}&url={share_url}"
+    st.write("### 🔮 結果をシェアして幸運を広げる")
+
+    # シェア用の文章とURL
+    share_text = f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い"
+    encoded_text = urllib.parse.quote(share_text)
+    share_url = "https://my-tarot-app.streamlit.app/" # あなたのアプリURL
+    encoded_url = urllib.parse.quote(share_url)
+
+    # ボタンを横に並べる（スマホでは自動で折り返されます）
+    col_sns1, col_sns2 = st.columns(2)
     
-    st.link_button("🐦 X(Twitter)で結果をシェアする", x_share_link, use_container_width=True)
+    with col_sns1:
+        # X (Twitter)
+        x_link = f"https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
+        st.link_button("🐦 X (Twitter)", x_link, use_container_width=True)
+        
+        # Threads (文字情報を送れる)
+        threads_link = f"https://www.threads.net/intent/post?text={encoded_text}%20{encoded_url}"
+        st.link_button("🧵 Threads", threads_link, use_container_width=True)
+
+    with col_sns2:
+        # LINE (日本国内では必須級)
+        line_link = f"https://social-plugins.line.me/lineit/share?url={encoded_url}"
+        st.link_button("💬 LINEで送る", line_link, use_container_width=True)
+        
+        # Facebook
+        fb_link = f"https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
+        st.link_button("📘 Facebook", fb_link, use_container_width=True)
+
+    # Instagram & TikTok (プロフィールへの誘導)
+    st.write("#### 📱 Creator Links")
+    col_sns3, col_sns4 = st.columns(2)
+    with col_sns3:
+        # あなたのインスタURLを入れてください
+        st.link_button("📸 Instagram", "https://www.instagram.com/あなたのID", use_container_width=True)
+    with col_sns4:
+        # あなたのTikTok URLを入れてください
+        st.link_button("🎵 TikTok", "https://www.tiktok.com/@あなたのID", use_container_width=True)
     # --- ここまで ---
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
