@@ -409,115 +409,50 @@ elif st.session_state.stage == 4:
         st.rerun()
 
 # --- stage 5: 表を表示＆鑑定開始 ---
+# --- stage 5: 表を表示＆鑑定ボタン ---
 elif st.session_state.stage == 5:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
 
     st.subheader("✨ カードが示されました…")
-
-    # フェード風（簡易）
-    if st.session_state.fade_step == 1:
-        st.markdown(f"""
-        <div class="fade-container">
-            <img src="{TAROT_BACK_URL}" class="fade-img hidden">
-        </div>
-        """, unsafe_allow_html=True)
-        time.sleep(0.25)
-        st.session_state.fade_step = 2
-        st.rerun()
-
-    st.markdown(f"""
-    <div class="fade-container">
-        <img src="{card_url}" class="fade-img visible">
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.markdown(f'<div class="fade-container"><img src="{card_url}" class="fade-img visible"></div>', unsafe_allow_html=True)
     st.caption(f"今日引いたカード: {card_name}")
 
     st.divider()
-
-    st.write("### 🎂 あなたの誕生日パーソナリティ（365日）")
-    st.write(f"**{birthday_key}｜称号:** {profile['title']}")
-    st.write(f"**本質:** {profile['core']}")
-    st.write(f"**強み:** {', '.join(profile['strengths'])}")
-    st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
-    st.write(f"**伸びる条件:** {profile['growth']}")
-    st.write(f"**合言葉:** {profile['mantra']}")
-  
-
-    st.divider()
-
-    st.write("### 🃏 誕生タロット（バースカード）")
-    if birth_card_url:
-        st.image(birth_card_url, width=220)
-    st.caption(f"誕生カード: {birth_card_name}")
-
-    st.divider()
-    st.write(f"**占いたい内容:** {fortune_topic}")
-    if one_line:
-        st.write(f"**気になっていること:** {one_line}")
-
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-    if st.button("🔮 鑑定する（無料・簡易）"):
+    if st.button("🔮 鑑定する（無料・簡易）", use_container_width=True):
         if not api_key:
-            st.error("APIキーが設定されていません。Secretsを確認してください。")
+            st.error("APIキーが設定されていません。")
         elif not nickname:
             st.warning("ニックネームを入れてください。")
         else:
             tone_hint = {
-                "gentle": "やわらかく包む口調。安心感と寄り添いを最優先。",
-                "bright": "明るく前向きな口調。希望を灯し、軽やかに背中を押す。",
-                "calm": "静かな自信の口調。落ち着きと品のある言葉で導く。",
-                "bold": "頼りがいのある口調。断定は避けつつ、決断の芯を渡す。"
-            }.get(profile["tone"], "やわらかく包む口調。安心感と寄り添いを最優先。")
+                "gentle": "やわらかく包む口調",
+                "bright": "明るく前向きな口調",
+                "calm": "静かな自信の口調",
+                "bold": "頼りがいのある口調"
+            }.get(profile["tone"], "やわらかく包む口調")
 
-            profile_text = f"""
-【誕生日パーソナリティ（{birthday_key}）】
-称号：{profile['title']}
-本質：{profile['core']}
-強み：{', '.join(profile['strengths'])}
-注意点：{', '.join(profile['pitfalls'])}
-伸びる条件：{profile['growth']}
-合言葉：{profile['mantra']}
-"""
-
-            user_one_line = one_line if one_line else "（入力なし）"
-
+            # プロンプト作成（ここを閉じ忘れるとエラーになります）
             prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
-不安を煽らず、相談者の味方として語りかけてください。
-口調は「{tone_hint}」。上から目線・説教口調は禁止。
-文章は神秘的で上品に。アールヌーヴォーの詩情（蔦花・月光・金線・星屑などの比喩）を少量だけ織り込みます（やり過ぎない）。
+口調は「{tone_hint}」。文章は神秘的で上品に。
 
 【相談者情報】
 ニックネーム：{nickname}
-生年月日：{birthday.isoformat()}（{birthday_key}）
-気になっていること：{user_one_line}
 占いたい内容：{fortune_topic}
 
-{profile_text}
+【誕生日パーソナリティ】
+称号：{profile['title']}
+核：{profile['core']}
 
-【誕生タロット（人生の軸）】
-誕生カード：{birth_card_name}
+【誕生タロット】：{birth_card_name}
+【今日のタロット】：{card_name}
 
-【今日のタロット（今日のテーマ）】
-今日引いたカード：{card_name}
-
-【鑑定ルール】
-・誕生日パーソナリティ＋誕生カードで「この人の核」を1〜2文で提示
-・次に「本質 × 今日のカード」の意味を掛け算で語る（別々に説明しない）
-・{topic_guide}
-・抽象論で終わらせず、今日すぐできる行動に落とす
-・恐怖表現、断定的な不幸表現は禁止。前向きに再解釈して寄り添う
-
-【出力形式】（必ずこの順番）
-■ あなたの本質（誕生日パーソナリティ＋誕生タロット）
-■ 今日のカードが出た意味（掛け算）
-■ {fortune_topic}についてのメッセージ（具体的に）
-■ 今のあなたへの一言メッセージ（寄り添い・励まし）
-■ 今日の開運アクション（3つ：短く、実行しやすく）
+上記を掛け合わせて、前向きなアドバイスと開運アクション3つを教えてください。
 """
+            # ↑ ここで """ を確実に閉じるのが重要です
 
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
@@ -527,55 +462,37 @@ elif st.session_state.stage == 5:
                 )
                 st.session_state.reading_text = response.choices[0].message.content
 
-            elif st.session_state.stage == 6:
+            st.session_state.stage = 6
+            st.rerun()
+
+# --- stage 6: 結果表示 ---
+elif st.session_state.stage == 6:
     card_name = st.session_state.selected_card_name
     card_url = TAROT_DATA[card_name]
 
-    st.subheader(f"✨ {nickname} さんの鑑定結果（無料版）")
+    st.subheader(f"✨ {nickname} さんの鑑定結果")
 
     c1, c2 = st.columns(2)
     with c1:
-        st.write("### 🎂 誕生カード")
         if birth_card_url:
-            st.image(birth_card_url, use_container_width=True)
-        st.caption(birth_card_name)
+            st.image(birth_card_url, use_container_width=True, caption=f"誕生カード: {birth_card_name}")
     with c2:
-        st.write("### 🔮 今日のカード")
-        st.image(card_url, use_container_width=True)
-        st.caption(card_name)
+        st.image(card_url, use_container_width=True, caption=f"今日のカード: {card_name}")
 
     st.divider()
-
-    st.write("### 🎂 誕生日パーソナリティ（365日）")
-    st.write(f"**{birthday_key}｜称号:** {profile['title']}")
-    st.write(f"**核:** {profile['core']}")
-    st.write(f"**強み:** {', '.join(profile['strengths'])}")
-    st.write(f"**注意点:** {', '.join(profile['pitfalls'])}")
-    st.write(f"**伸びる条件:** {profile['growth']}")
-    st.write(f"**合言葉:** {profile['mantra']}")
-
-    st.divider()
-
-    # 鑑定文の表示（枠付き）
     if st.session_state.reading_text:
         st.markdown(f'<div class="result-box">{st.session_state.reading_text}</div>', unsafe_allow_html=True)
-        st.success("鑑定が完了しました！")
 
-    # --- SNSシェア・拡散機能（ここから差し替え） ---
+    # --- SNSシェア・拡散機能 ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
-    st.write('<p class="small-note">※シェアによってあなたの個人情報が作者に伝わることはありません。</p>', unsafe_allow_html=True)
-
-    # シェア用の文章とURLの準備
-    share_text = f"【神秘の誕生日タロット】今日の私のカードは『{card_name}』でした！🔮 {nickname}さんの運勢は... #AIタロット #占い"
-    import urllib.parse
-    encoded_text = urllib.parse.quote(share_text)
     
-    # 実際のアプリURLに書き換えてください
-    share_url = "https://my-tarot-app.streamlit.app/" 
+    import urllib.parse
+    share_text = f"【神秘の誕生日タロット】今日のカードは『{card_name}』でした！🔮 #AIタロット"
+    encoded_text = urllib.parse.quote(share_text)
+    share_url = "https://my-tarot-app.streamlit.app/" # あなたのURL
     encoded_url = urllib.parse.quote(share_url)
 
-    # SNSロゴボタン（Instagram/TikTokは公式へ）
     sns_html = f"""
     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
         <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">
@@ -593,13 +510,10 @@ elif st.session_state.stage == 5:
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
-
-    st.info("📸 **結果をスクショしてシェア！**\\nハッシュタグ #AIタロット を付けてSNSに投稿してね！")
+    st.info("📸 結果をスクショしてSNSに投稿してね！ #AIタロット")
 
     st.divider()
-    st.write("### 🕯️ さらなる深淵へ")
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True, type="primary")
-
 
 
 
