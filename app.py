@@ -151,25 +151,26 @@ if st.session_state.stage == 0:
         if not nickname:
             st.warning("ニックネームを入れてください。")
         else:
+            # 山札作成 → シャッフル
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
 
-           # カット演出（安全版）
-deck = st.session_state.deck
-n = len(deck)
+            # カット演出（安全版）
+            deck = st.session_state.deck
+            n = len(deck)
 
-if n >= 10:
-    cut1 = random.randint(3, n - 4)
-    cut2 = random.randint(cut1 + 1, n - 3)
+            if n >= 10:
+                cut1 = random.randint(3, n - 4)
+                cut2 = random.randint(cut1 + 1, n - 3)
 
-    a = deck[:cut1]
-    b = deck[cut1:cut2]
-    c = deck[cut2:]
-    st.session_state.deck = b + c + a
-else:
-    random.shuffle(st.session_state.deck)
+                a = deck[:cut1]
+                b = deck[cut1:cut2]
+                c = deck[cut2:]
+                st.session_state.deck = b + c + a
+            else:
+                random.shuffle(st.session_state.deck)
 
-
+            # ★ ここは「else の中」で、インデントはこの深さ
             st.session_state.stage = 1
             st.rerun()
 
@@ -355,6 +356,7 @@ elif st.session_state.stage == 6:
     st.write("### 🔮 もっと深いお悩みをお持ちですか？")
     my_sales_url = "https://coconala.com/"
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
+
 
 
 
