@@ -270,39 +270,22 @@ elif st.session_state.stage == 5:
     card_url = TAROT_DATA[card_name]
 
     st.subheader("✨ カードが示されました…")
-
-    # step1: 暗転（裏を消す）
-    if st.session_state.fade_step == 1:
-        st.markdown(f"""
-        <div class="fade-container">
-            <img src="{TAROT_BACK_URL}" class="fade-img hidden">
-        </div>
-        """, unsafe_allow_html=True)
-        time.sleep(0.25)
-        st.session_state.fade_step = 2
-        st.rerun()
-
-    # step2: 表を表示（フェードイン）
-    st.markdown(f"""
-    <div class="fade-container">
-        <img src="{card_url}" class="fade-img visible">
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.image(card_url, width=240)
     st.caption(f"引いたカード: {card_name}")
     st.write(f"**{nickname} さんのライフパスナンバー:** {life_path}")
+    st.write(f"**占いたい内容:** {fortune_topic}")
 
     st.divider()
     st.write("🔮 準備ができたら鑑定を開始します。")
 
-  if st.button("🔮 鑑定する（無料・簡易）"):
-    if not api_key:
-        st.error("APIキーが設定されていません。Secretsを確認してください。")
-    else:
-        client = OpenAI(api_key=api_key)
-        with st.spinner("星の声を聴いています..."):
+    if st.button("🔮 鑑定する（無料・簡易）"):
+        if not api_key:
+            st.error("APIキーが設定されていません。Secretsを確認してください。")
+        else:
+            client = OpenAI(api_key=api_key)
+            with st.spinner("星の声を聴いています..."):
 
-            prompt = f"""
+                prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 決して不安を煽らず、相談者の味方として語りかけてください。
 
@@ -330,16 +313,16 @@ elif st.session_state.stage == 5:
 日本語で、占い師が対面で語りかけるように鑑定してください。
 """
 
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}]
-            )
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}]
+                )
 
-            st.session_state.reading_text = response.choices[0].message.content
-
+                st.session_state.reading_text = response.choices[0].message.content
 
             st.session_state.stage = 6
             st.rerun()
+
 
 # --- stage 6: 結果表示 ---
 elif st.session_state.stage == 6:
@@ -369,6 +352,7 @@ elif st.session_state.stage == 6:
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
   
+
 
 
 
