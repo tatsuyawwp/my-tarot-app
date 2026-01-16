@@ -39,6 +39,13 @@ TAROT_DATA = {
     "世界": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true"
 }
 
+TOPIC_GUIDE = {
+    "今日の運勢": "今日1日の流れに焦点を当て、朝〜夜の過ごし方のコツも入れてください。",
+    "恋愛": "相手の気持ちを断定せず、距離の縮め方・言葉選び・やってはいけないことを具体的に。",
+    "仕事": "仕事の進め方、評価されるポイント、トラブル回避、今日の優先順位を具体的に。"
+}
+topic_guide = TOPIC_GUIDE[fortune_topic]
+
 # APIキー
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
@@ -294,7 +301,7 @@ elif st.session_state.stage == 5:
         else:
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
-                prompt = f"""
+               prompt = f"""
 あなたは経験豊富で思いやりのある占い師です。
 決して不安を煽らず、相談者の味方として語りかけてください。
 
@@ -308,6 +315,7 @@ elif st.session_state.stage == 5:
 ・まず「ライフパスナンバー」から、この人の本質的な性格をやさしく説明する
 ・次に「その性格の人だからこそ、このカードが出た理由」を語る
 ・占いたい内容（{fortune_topic}）にフォーカスして具体的に占う
+・{topic_guide}
 ・言葉は温かく、人間味があり、頼りがいのある口調にする
 ・恐怖表現や断定的な不幸表現は禁止
 ・前向きな再解釈と行動のヒントを必ず入れる
@@ -360,5 +368,6 @@ elif st.session_state.stage == 6:
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", my_sales_url, type="primary")
 
   
+
 
 
