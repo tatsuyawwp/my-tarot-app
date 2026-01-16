@@ -472,7 +472,7 @@ elif st.session_state.stage == 5:
 ・人間味があり、落ち着いていて、少しだけ核心を突く
 ・「大丈夫」だけで終わらせず、「だからこうするといい」に繋げる
 ・読み終えたあと、静かに背中を押される感覚を大切にする
-
+"""
             client = OpenAI(api_key=api_key)
             with st.spinner("星の声を聴いています..."):
                 response = client.chat.completions.create(
@@ -592,6 +592,7 @@ elif st.session_state.stage == 6:
 
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
+
 
 
 
