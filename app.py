@@ -593,6 +593,21 @@ elif st.session_state.stage == 6:
     st.divider()
     st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
 
+st.divider()
+st.markdown("## ☕ この占いを続ける応援")
+
+st.write(
+    "この占いは無料で公開しています。\n"
+    "もし少しでも役に立ったと感じたら、"
+    "コーヒー1杯分の応援で活動を続けることができます。"
+)
+
+st.link_button(
+    "☕ Buy Me a Coffee で応援する",
+    "https://buymeacoffee.com/mystic_tarot",
+    use_container_width=True
+)
+
 
 
 
