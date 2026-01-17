@@ -502,23 +502,7 @@ elif st.session_state.stage == 6:
     st.markdown(st.session_state.reading_text or "")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ✅ ここに「有料版へ」導線を入れる（シェアより前がベスト）
-    st.divider()
-    st.markdown("## 🔒 もっと深く占う（有料版）")
-    st.write("無料版は“今日のテーマ”まで。次は、あなたの状況に合わせて **原因と具体策** まで深掘りします。")
-
-    u1, u2, u3 = st.columns(3)
-    with u1:
-        st.markdown("### 🕰 過去・現在・未来\n3枚引きで流れを読む")
-    with u2:
-        st.markdown("### 🧭 具体的な行動\nあなた用の優先順位を作る")
-    with u3:
-        st.markdown("### 💡 追加1枚\nアドバイスカードを引く")
-
-    st.info("※ 不安を煽らず、前向きに整える鑑定だけを行います。")
-    st.link_button("✨ 有料版で深掘りする（おすすめ）", "https://coconala.com/", use_container_width=True, type="primary")
-
-    # --- シェア ---
+      # --- シェア ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
@@ -590,10 +574,7 @@ elif st.session_state.stage == 6:
     """
     st.markdown(sns_html, unsafe_allow_html=True)
 
-    st.divider()
-    st.link_button("✨ 個人鑑定の詳細・お申し込みはこちら", "https://coconala.com/", use_container_width=True)
-
-st.divider()
+   st.divider()
 st.markdown("## ☕ この占いを続ける応援")
 
 st.write(
@@ -607,6 +588,7 @@ st.link_button(
     "https://buymeacoffee.com/mystic_tarot",
     use_container_width=True
 )
+
 
 
 
