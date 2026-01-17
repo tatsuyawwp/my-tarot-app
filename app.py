@@ -502,7 +502,7 @@ elif st.session_state.stage == 6:
     st.markdown(st.session_state.reading_text or "")
     st.markdown("</div>", unsafe_allow_html=True)
 
-      # --- シェア ---
+    # --- シェア ---
     st.divider()
     st.write("### 🔮 結果をシェアして幸運を広げる")
 
@@ -525,71 +525,42 @@ elif st.session_state.stage == 6:
     encoded_url = urllib.parse.quote(share_url)
 
     share_pack = f"{share_text}\n{share_url}"
-
-    c_copy1, c_copy2 = st.columns([1, 1])
-    with c_copy1:
-        if st.button("📋 文章をコピー（Instagram / TikTok向け）", use_container_width=True):
-            st.toast("この下の文章を選択してコピーしてね ✨", icon="✅")
-    with c_copy2:
-        if st.button("📋 URLだけコピー（LINE / Facebook向け）", use_container_width=True):
-            st.toast("URLをコピーしてシェアしよう ✨", icon="✅")
-
     st.code(share_pack, language="text")
-    st.caption("↑ ここをドラッグしてコピーしてね（スマホは長押し→コピー）")
+    st.caption("↑ ここをコピーして投稿できます（スマホは長押し→コピー）")
 
     sns_html = f"""
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
-
-      <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
-         target="_blank" class="sns-button btn-x">
+      <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x">
          <i class="fa-brands fa-x-twitter"></i> X
       </a>
-
-      <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}"
-         target="_blank" class="sns-button btn-line">
+      <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line">
          <i class="fa-brands fa-line"></i> LINE
       </a>
-
-      <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
-         target="_blank" class="sns-button btn-fb">
+      <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}" target="_blank" class="sns-button btn-fb">
          <i class="fa-brands fa-facebook"></i> Facebook
       </a>
-
-      <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}"
-         target="_blank" class="sns-button btn-threads">
+      <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}" target="_blank" class="sns-button btn-threads">
          <i class="fa-brands fa-threads"></i> Threads
       </a>
-
-      <a href="https://www.instagram.com/"
-         target="_blank" class="sns-button btn-insta">
+      <a href="https://www.instagram.com/" target="_blank" class="sns-button btn-insta">
          <i class="fa-brands fa-instagram"></i> Instagram
       </a>
-
-      <a href="https://www.tiktok.com/"
-         target="_blank" class="sns-button btn-tiktok">
+      <a href="https://www.tiktok.com/" target="_blank" class="sns-button btn-tiktok">
          <i class="fa-brands fa-tiktok"></i> TikTok
       </a>
-
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
 
-   st.divider()
-st.markdown("## ☕ この占いを続ける応援")
-
-st.write(
-    "この占いは無料で公開しています。\n"
-    "もし少しでも役に立ったと感じたら、"
-    "コーヒー1杯分の応援で活動を続けることができます。"
-)
-
-st.link_button(
-    "☕ Buy Me a Coffee で応援する",
-    "https://buymeacoffee.com/mystic_tarot",
-    use_container_width=True
-)
-
-
+    # --- 応援（Buy Me a Coffee）---
+    st.divider()
+    st.markdown("### ☕ この占いを続ける応援")
+    st.write("この占いは無料で公開しています。もし少しでも役に立ったら、コーヒー1杯の応援で活動を続けられます。")
+    st.link_button(
+        "☕ Buy Me a Coffee で応援する",
+        "https://buymeacoffee.com/mystic_tarot",
+        use_container_width=True
+    )
 
 
 
