@@ -10,6 +10,12 @@ from openai import OpenAI
 # =========================
 st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮")
 st.title("🔮 神秘の誕生日タロット占い（無料版）")
+st.write(
+    "生年月日から導き出すライフパスナンバーと、"
+    "AIを使ってオリジナルアルゴリズムを実装したタロット占いです"
+    "今のあなたへのメッセージをお届けします。"
+    )
+st.caption("※エンタメ占いとしてお楽しみください。")
 
 # =========================
 # 画像URLとメタデータ（22枚維持）
@@ -140,9 +146,12 @@ def calc_life_path(bday: date) -> int:
     while s > 9 and s not in [11, 22, 33]:
         s = sum(int(d) for d in str(s))
     return s
-
-
-def get_life_path_info(num: int) -> str:
+    """
+    生年月日からライフパスナンバーを算出する。
+    11, 22, 33 はマスターナンバーとして分解せず、そのまま返す。
+    それ以外は1桁になるまで足し合わせる。
+    """
+    def get_life_path_info(num: int) -> str:
     info = {
         1: "自立心の強い開拓者",
         2: "繊細な調停者",
@@ -309,7 +318,19 @@ birthday = st.date_input(
     max_value=today,
 )
 nickname = st.text_input("ニックネーム", placeholder="例：たろちゃん")
-fortune_topic = st.selectbox("占いたい内容", ["今日の運勢", "恋愛・あの人の気持ち", "仕事・キャリア", "自分の潜在能力・才能", "人間関係の悩み", "金運・豊かさ"], index=0)
+fortune_topic = st.selectbox(
+    "占いたいテーマを選んでください",
+    [
+        "① 全体運（今日の運勢）",
+        "② 恋愛・パートナーシップ",
+        "③ 仕事・キャリア",
+        "④ 才能・適性・ライフワーク",
+        "⑤ 人間関係・家族・友人",
+        "⑥ お金・豊かさ・働き方",
+    ],
+    index=0,
+)
+
 one_line = st.text_input("気になっていること（任意）", placeholder="例：今日の大事な会議について")
 
 if st.button("🔄 最初からやり直す"):
@@ -335,6 +356,9 @@ if st.session_state.stage == 0:
             random.shuffle(st.session_state.deck)
             st.session_state.stage = 1
             st.rerun()
+if not api_key:
+    st.error("APIキーが必要です。Streamlitの『Secrets』に OPENAI_API_KEY を設定してください。")
+    st.stop()
 
 # --- stage 1: シャッフル演出 ---
 elif st.session_state.stage == 1:
@@ -456,13 +480,21 @@ elif st.session_state.stage == 3:
 ・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
 """
                 client = OpenAI(api_key=api_key)
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}],
-                )
-                st.session_state.reading_text = (
-                    response.choices[0].message.content.strip().replace("■ ", "\n### ")
-                )
+try:
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        # temperature=0.9 くらい足してもOK（少し占いっぽさUP）
+    )
+    text = response.choices[0].message.content.strip()
+    # 必要ならここで置換
+    st.session_state.reading_text = text
+    st.session_state.stage = 4
+    st.rerun()
+except Exception as e:
+    st.error("少し混み合っているようです。時間をおいてもう一度お試しください。")
+    st.caption(f"（エラー内容: {e}）")
+
                 st.session_state.stage = 4
                 st.rerun()
 
@@ -484,6 +516,9 @@ elif st.session_state.stage == 4:
     st.markdown("<div class='result-box'>", unsafe_allow_html=True)
     st.markdown(st.session_state.reading_text)
     st.markdown("</div>", unsafe_allow_html=True)
+# プロンプト末尾に追加（既存の箇条書きの一番下あたりに）
+・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
+・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 
     # --- SNS シェア ---
     st.divider()
@@ -535,9 +570,9 @@ elif st.session_state.stage == 4:
     st.divider()
     st.markdown("### ☕ この占いを続ける応援")
     st.write(
-        "この占いは無料で公開しています。"
-        "もし少しでも役に立ったと感じたら、"
-        "コーヒー1杯分の応援で活動を続けることができます。"
+        "この占いは広告なし・無料で運営しています。"
+    "「また引きたいな」と感じてもらえたら、"
+    "コーヒー1杯分の応援が次の改善や新メニューの開発につながります。"
     )
 
     st.link_button(
@@ -545,4 +580,11 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+　st.link_button(
+    "💌 OFUSEで応援メッセージを送る（おすすめ）",
+    "https://ofuse.me/あなたのID",
+    use_container_width=True,
+    type="primary",
+)
+
 
