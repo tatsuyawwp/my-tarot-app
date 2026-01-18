@@ -1,5 +1,5 @@
-import streamlit as st
-import random
+import randomimport streamlit as st
+
 import time
 import urllib.parse
 from datetime import date
@@ -58,7 +58,7 @@ def get_life_path_info(num: int) -> str:
     return info.get(num, "未知の可能性を秘めた人")
 
 # =========================
-# CSS
+# APIキー・CSS
 # =========================
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
@@ -73,7 +73,7 @@ css = """
 .btn-insta{ background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); } .btn-tiktok{ background:#010101; }
 
 .fade-img { width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.6s ease-in-out; }
-.reversed { transform: rotate(180deg); } /* 逆位置用の回転設定 */
+.reversed { transform: rotate(180deg); } 
 
 @keyframes floaty { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
 @keyframes shimmer { 0% { filter: brightness(1); } 50% { filter: brightness(1.08); } 100% { filter: brightness(1); } }
@@ -99,6 +99,29 @@ def reset_all():
     st.session_state.reading_text = None
 
 # =========================
+# ヘルパー関数
+# =========================
+def show_card_image(card_obj, caption):
+    """カード表示関数（古いデータ形式への対策済み）"""
+    # card_obj が辞書でない（古い形式の文字列など）場合の対策
+    if isinstance(card_obj, dict):
+        name = card_obj.get("name", "愚者")
+        is_rev = card_obj.get("is_reversed", False)
+    else:
+        name = str(card_obj)
+        is_rev = False
+
+    url = TAROT_DATA.get(name, TAROT_DATA["愚者"])["url"]
+    rev_class = "reversed" if is_rev else ""
+    orient_text = "（逆位置）" if is_rev else "（正位置）"
+    st.markdown(f"""
+        <div style="text-align:center;">
+            <img src="{url}" class="fade-img {rev_class}" style="max-width:200px;">
+            <p style="margin-top:10px; font-weight:bold;">{caption}: {name}{orient_text}</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+# =========================
 # メイン画面
 # =========================
 today = date.today()
@@ -113,27 +136,15 @@ if st.button("🔄 最初からやり直す"):
 
 st.divider()
 
-# ヘルパー関数：カード表示（正逆対応）
-def show_card_image(card_obj, caption):
-    name = card_obj["name"]
-    is_rev = card_obj["is_reversed"]
-    url = TAROT_DATA[name]["url"]
-    rev_class = "reversed" if is_rev else ""
-    orient_text = "（逆位置）" if is_rev else "（正位置）"
-    st.markdown(f"""
-        <div style="text-align:center;">
-            <img src="{url}" class="fade-img {rev_class}" style="max-width:200px;">
-            <p style="margin-top:10px; font-weight:bold;">{caption}: {name}{orient_text}</p>
-        </div>
-    """, unsafe_allow_html=True)
-
 # --- ステージ制御 ---
 if st.session_state.stage == 0:
     st.subheader("🧘‍♂️ 準備")
-    st.write("「今の自分」と「未来への鍵」の2枚を引き当てます。逆位置も含まれます。")
+    st.write("「今の自分」と「未来への鍵」の2枚を引き当てます。")
     if st.button("🌀 占いを開始する"):
         if not nickname: st.warning("ニックネームを入れてください。")
         else:
+            # 念のため開始時に古いデータをクリア
+            st.session_state.selected_cards = [] 
             st.session_state.deck = list(TAROT_DATA.keys())
             random.shuffle(st.session_state.deck)
             st.session_state.stage = 1
@@ -155,13 +166,15 @@ elif st.session_state.stage == 2:
     cols = st.columns(7)
     for i, name in enumerate(st.session_state.candidates):
         with cols[i]:
-            # すでに選んだカードは暗くする
-            is_already_picked = any(c["name"] == name for c in st.session_state.selected_cards)
+            # 重複チェック部分の修正（辞書・文字列両対応）
+            is_already_picked = any(
+                (c["name"] if isinstance(c, dict) else c) == name 
+                for c in st.session_state.selected_cards
+            )
             opacity = "0.3" if is_already_picked else "1.0"
             st.markdown(f'<img src="{TAROT_BACK_URL}" style="width:100%; opacity:{opacity}; border-radius:5px;">', unsafe_allow_html=True)
             if not is_already_picked:
                 if st.button("選択", key=f"btn_{name}_{i}"):
-                    # 50%の確率で逆位置を決定
                     is_reversed = random.random() < 0.5
                     st.session_state.selected_cards.append({"name": name, "is_reversed": is_reversed})
                     if len(st.session_state.selected_cards) == 2:
@@ -171,48 +184,50 @@ elif st.session_state.stage == 2:
 elif st.session_state.stage == 3:
     st.subheader("🔮 選ばれた2枚のメッセージ")
     c1, c2 = st.columns(2)
-    with c1: show_card_image(st.session_state.selected_cards[0], "1. 現在の状況")
-    with c2: show_card_image(st.session_state.selected_cards[1], "2. 未来の鍵")
+    # 選択済みカードリストが空でないか確認
+    if len(st.session_state.selected_cards) >= 2:
+        with c1: show_card_image(st.session_state.selected_cards[0], "1. 現在の状況")
+        with c2: show_card_image(st.session_state.selected_cards[1], "2. 未来の鍵")
 
-    if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
-        if not api_key: st.error("APIキーが必要です。")
-        else:
-            lp_num = calc_life_path(birthday)
-            lp_info = get_life_path_info(lp_num)
-            with st.spinner("深層意識を読み解いています..."):
-                card1 = st.session_state.selected_cards[0]
-                card2 = st.session_state.selected_cards[1]
-                meta1 = TAROT_DATA[card1["name"]]
-                meta2 = TAROT_DATA[card2["name"]]
+        if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
+            if not api_key: st.error("APIキーが必要です。")
+            else:
+                lp_num = calc_life_path(birthday)
+                lp_info = get_life_path_info(lp_num)
+                with st.spinner("深層意識を読み解いています..."):
+                    card1 = st.session_state.selected_cards[0]
+                    card2 = st.session_state.selected_cards[1]
+                    # 安全な名称取得
+                    name1 = card1["name"] if isinstance(card1, dict) else card1
+                    name2 = card2["name"] if isinstance(card2, dict) else card2
+                    rev1 = "逆位置" if (isinstance(card1, dict) and card1["is_reversed"]) else "正位置"
+                    rev2 = "逆位置" if (isinstance(card2, dict) and card2["is_reversed"]) else "正位置"
+                    
+                    meta1 = TAROT_DATA[name1]
+                    meta2 = TAROT_DATA[name2]
 
-                prompt = f"""
+                    prompt = f"""
 あなたは、数秘術とタロットを融合させた精密鑑定を行うプロの占い師です。
 相談者：{nickname}（ライフパス{lp_num}：{lp_info}）
 相談内容：{fortune_topic} / {one_line}
 
 【引いたカード】
-1. 現状：{card1['name']}（{'逆位置' if card1['is_reversed'] else '正位置'}）
-   - 元素：{meta1['element']} / 占星術対応：{meta1['astro']}
-2. 助言：{card2['name']}（{'逆位置' if card2['is_reversed'] else '正位置'}）
-   - 元素：{meta2['element']} / 占星術対応：{meta2['astro']}
+1. 現状：{name1}（{rev1}） / 元素：{meta1['element']}
+2. 助言：{name2}（{rev2}） / 元素：{meta2['element']}
 
 【鑑定指示】
 ・ライフパス{lp_num}の特性に基づき、なぜこの2枚が引き寄せられたか物語る
-・逆位置は単なる「不運」ではなく「エネルギーの過剰・不足・内省・遅延・本音」として深く解釈する
-・元素の相性（例：火と水なら感情の衝突など）も考慮に含める
-・具体的で前向きなアクションを3つ提示する
-
-【出力構成】
-1. ライフパス{lp_num}の気質と現状の共鳴
-2. 今のエネルギー状態（{card1['name']}の解釈）
-3. 未来を切り拓く鍵（{card2['name']}の活用法）
-4. 明日へのやさしいメッセージ
+・逆位置は単なる不運ではなく「エネルギーの過剰・内省・遅延」として解釈する
+・前向きなアクションを3つ提示する
 """
-                client = OpenAI(api_key=api_key)
-                response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}])
-                st.session_state.reading_text = response.choices[0].message.content.strip().replace("■ ", "\n### ")
-                st.session_state.stage = 4
-                st.rerun()
+                    client = OpenAI(api_key=api_key)
+                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}])
+                    st.session_state.reading_text = response.choices[0].message.content.strip().replace("■ ", "\n### ")
+                    st.session_state.stage = 4
+                    st.rerun()
+    else:
+        st.error("カードが正しく選択されていません。最初からやり直してください。")
+        if st.button("最初からやり直す"): reset_all(); st.rerun()
 
 elif st.session_state.stage == 4:
     st.subheader(f"✨ {nickname} さんの鑑定結果")
@@ -228,8 +243,9 @@ elif st.session_state.stage == 4:
     st.divider()
     st.write("### 🔮 幸運をシェアする")
     share_url = "https://my-tarot-app.streamlit.app/"
-    c1_n, c2_n = st.session_state.selected_cards[0]['name'], st.session_state.selected_cards[1]['name']
-    share_text = f"今日の鑑定は『{c1_n}』と『{c2_n}』🔮 #AIタロット"
+    n1 = st.session_state.selected_cards[0]["name"] if isinstance(st.session_state.selected_cards[0], dict) else st.session_state.selected_cards[0]
+    n2 = st.session_state.selected_cards[1]["name"] if isinstance(st.session_state.selected_cards[1], dict) else st.session_state.selected_cards[1]
+    share_text = f"今日の鑑定は『{n1}』と『{n2}』🔮 #AIタロット"
     encoded_text = urllib.parse.quote(share_text)
     encoded_url = urllib.parse.quote(share_url)
 
@@ -238,7 +254,6 @@ elif st.session_state.stage == 4:
       <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x"><i class="fa-brands fa-x-twitter"></i> X</a>
       <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line"><i class="fa-brands fa-line"></i> LINE</a>
       <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}" target="_blank" class="sns-button btn-fb"><i class="fa-brands fa-facebook"></i> FB</a>
-      <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}" target="_blank" class="sns-button btn-threads"><i class="fa-brands fa-threads"></i> Threads</a>
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
