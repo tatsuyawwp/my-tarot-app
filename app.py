@@ -12,35 +12,123 @@ st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮"
 st.title("🔮 神秘の誕生日タロット占い（無料版）")
 
 # =========================
-# 画像URLとメタデータ（22枚）
+# 画像URLとメタデータ（22枚維持）
 # =========================
 TAROT_BACK_URL = (
     "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tarrotback.png?raw=true"
 )
 
 TAROT_DATA = {
-    "愚者": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true", "element": "風", "astro": "天王星"},
-    "魔術師": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/magician.png?raw=true", "element": "風", "astro": "水星"},
-    "女教皇": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/high%20priestess.jpg?raw=true", "element": "水", "astro": "月"},
-    "女帝": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/empress.png?raw=true", "element": "地", "astro": "金星"},
-    "皇帝": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/emperor.png?raw=true", "element": "火", "astro": "牡羊座"},
-    "法王": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hierophant.png?raw=true", "element": "地", "astro": "牡牛座"},
-    "恋人": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/lovers.png?raw=true", "element": "風", "astro": "双子座"},
-    "戦車": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/chariot.png?raw=true", "element": "水", "astro": "蟹座"},
-    "力": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/strength.png?raw=true", "element": "火", "astro": "獅子座"},
-    "隠者": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hermit.png?raw=true", "element": "地", "astro": "乙女座"},
-    "運命の輪": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/wheel.png?raw=true", "element": "火", "astro": "木星"},
-    "正義": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/justice.png?raw=true", "element": "風", "astro": "天秤座"},
-    "吊るされた男": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hanged_man.png?raw=true", "element": "水", "astro": "海王星"},
-    "死神": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/death.png?raw=true", "element": "水", "astro": "蠍座"},
-    "節制": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/temperance.png?raw=true", "element": "火", "astro": "射手座"},
-    "悪魔": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/devil.png?raw=true", "element": "地", "astro": "山羊座"},
-    "塔": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tower.png?raw=true", "element": "火", "astro": "火星"},
-    "星": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/star.png?raw=true", "element": "風", "astro": "水瓶座"},
-    "月": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/moon.png?raw=true", "element": "水", "astro": "魚座"},
-    "太陽": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/sun.png?raw=true", "element": "火", "astro": "太陽"},
-    "審判": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/judgement.png?raw=true", "element": "火", "astro": "冥王星"},
-    "世界": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true", "element": "地", "astro": "土星"},
+    "愚者": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true",
+        "element": "風",
+        "astro": "天王星",
+    },
+    "魔術師": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/magician.png?raw=true",
+        "element": "風",
+        "astro": "水星",
+    },
+    "女教皇": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/high%20priestess.jpg?raw=true",
+        "element": "水",
+        "astro": "月",
+    },
+    "女帝": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/empress.png?raw=true",
+        "element": "地",
+        "astro": "金星",
+    },
+    "皇帝": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/emperor.png?raw=true",
+        "element": "火",
+        "astro": "牡羊座",
+    },
+    "法王": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hierophant.png?raw=true",
+        "element": "地",
+        "astro": "牡牛座",
+    },
+    "恋人": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/lovers.png?raw=true",
+        "element": "風",
+        "astro": "双子座",
+    },
+    "戦車": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/chariot.png?raw=true",
+        "element": "水",
+        "astro": "蟹座",
+    },
+    "力": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/strength.png?raw=true",
+        "element": "火",
+        "astro": "獅子座",
+    },
+    "隠者": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hermit.png?raw=true",
+        "element": "地",
+        "astro": "乙女座",
+    },
+    "運命の輪": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/wheel.png?raw=true",
+        "element": "火",
+        "astro": "木星",
+    },
+    "正義": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/justice.png?raw=true",
+        "element": "風",
+        "astro": "天秤座",
+    },
+    "吊るされた男": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/hanged_man.png?raw=true",
+        "element": "水",
+        "astro": "海王星",
+    },
+    "死神": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/death.png?raw=true",
+        "element": "水",
+        "astro": "蠍座",
+    },
+    "節制": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/temperance.png?raw=true",
+        "element": "火",
+        "astro": "射手座",
+    },
+    "悪魔": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/devil.png?raw=true",
+        "element": "地",
+        "astro": "山羊座",
+    },
+    "塔": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tower.png?raw=true",
+        "element": "火",
+        "astro": "火星",
+    },
+    "星": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/star.png?raw=true",
+        "element": "風",
+        "astro": "水瓶座",
+    },
+    "月": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/moon.png?raw=true",
+        "element": "水",
+        "astro": "魚座",
+    },
+    "太陽": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/sun.png?raw=true",
+        "element": "火",
+        "astro": "太陽",
+    },
+    "審判": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/judgement.png?raw=true",
+        "element": "火",
+        "astro": "冥王星",
+    },
+    "世界": {
+        "url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true",
+        "element": "地",
+        "astro": "土星",
+    },
 }
 
 # =========================
@@ -78,22 +166,24 @@ def get_life_path_info(num: int) -> str:
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
-css_html = """
+# ここが「裏側だけに効く」CSS。画面には出ません。
+st.markdown(
+    """
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* 鑑定結果ボックス */
+/* ===== 鑑定結果ボックス ===== */
 .result-box{
-  background:#fbfbfd;
-  border-left:6px solid #d4af37;
-  padding:18px;
-  border-radius:12px;
-  line-height:1.95;
-  font-size:1.03rem;
-  color:#222;
+  background: #fbfbfd;
+  border-left: 6px solid #d4af37;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.95;
+  font-size: 1.03rem;
+  color: #222;
 }
 
-/* SNS ボタン共通 */
+/* ===== SNS ボタン共通 ===== */
 .sns-button{
   display:inline-flex;
   align-items:center;
@@ -119,29 +209,34 @@ css_html = """
 .btn-line{ background:#06C755; }
 .btn-fb{ background:#1877F2; }
 .btn-threads{ background:#000; }
+
+/* Instagram & TikTok の背景 */
 .btn-insta{
   background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
 }
-.btn-tiktok{ background:#010101; }
+.btn-tiktok{
+  background:#010101;
+}
 
 /* カード画像の演出 */
-.fade-img{
-  width:100%;
-  border-radius:8px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+.fade-img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* シャッフル中にクルクル回す */
-@keyframes spin{
-  0%{ transform:rotate(0deg); }
-  100%{ transform:rotate(360deg); }
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
-.shuffle{
-  animation:spin 1.2s linear infinite;
+.shuffle {
+  animation: spin 1.2s linear infinite;
 }
 </style>
-"""
-st.markdown(css_html, unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # =========================
 # Session State 初期化
@@ -249,7 +344,7 @@ elif st.session_state.stage == 2:
                         st.session_state.stage = 3
                     st.rerun()
 
-# --- stage 3: 鑑定準備（API 呼び出し） ---
+# --- stage 3: 鑑定準備 ---
 elif st.session_state.stage == 3:
     st.subheader("🔮 選ばれた2枚のメッセージ")
 
@@ -343,40 +438,40 @@ elif st.session_state.stage == 4:
     encoded_url = urllib.parse.quote(share_url)
 
     sns_html = f"""
-    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
 
-      <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
-         target="_blank" class="sns-button btn-x">
-         <i class="fa-brands fa-x-twitter"></i> X
-      </a>
+  <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
+     target="_blank" class="sns-button btn-x">
+     <i class="fa-brands fa-x-twitter"></i> X
+  </a>
 
-      <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}"
-         target="_blank" class="sns-button btn-line">
-         <i class="fa-brands fa-line"></i> LINE
-      </a>
+  <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}"
+     target="_blank" class="sns-button btn-line">
+     <i class="fa-brands fa-line"></i> LINE
+  </a>
 
-      <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
-         target="_blank" class="sns-button btn-fb">
-         <i class="fa-brands fa-facebook"></i> FB
-      </a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
+     target="_blank" class="sns-button btn-fb">
+     <i class="fa-brands fa-facebook"></i> FB
+  </a>
 
-      <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}"
-         target="_blank" class="sns-button btn-threads">
-         <i class="fa-brands fa-threads"></i> Threads
-      </a>
+  <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}"
+     target="_blank" class="sns-button btn-threads">
+     <i class="fa-brands fa-threads"></i> Threads
+  </a>
 
-      <a href="https://www.instagram.com/"
-         target="_blank" class="sns-button btn-insta">
-         <i class="fa-brands fa-instagram"></i> Instagram
-      </a>
+  <a href="https://www.instagram.com/"
+     target="_blank" class="sns-button btn-insta">
+     <i class="fa-brands fa-instagram"></i> Instagram
+  </a>
 
-      <a href="https://www.tiktok.com/"
-         target="_blank" class="sns-button btn-tiktok">
-         <i class="fa-brands fa-tiktok"></i> TikTok
-      </a>
+  <a href="https://www.tiktok.com/"
+     target="_blank" class="sns-button btn-tiktok">
+     <i class="fa-brands fa-tiktok"></i> TikTok
+  </a>
 
-    </div>
-    """
+</div>
+"""
     st.markdown(sns_html, unsafe_allow_html=True)
 
     # --- 応援（Buy Me a Coffee）---
