@@ -161,15 +161,17 @@ def get_life_path_info(num: int) -> str:
 
 
 # =========================
-# APIキー・CSS
+# APIキー・CSS（ここが修正版）
 # =========================
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
+# ✅ <link> をやめて、@import で FontAwesome を読み込む
+#    これで CSS が文字として表示される不具合が起きにくくなります
 css = """
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css");
+
 /* ===== 鑑定結果ボックス ===== */
 .result-box{
   background: #fbfbfd;
@@ -233,7 +235,6 @@ css = """
 }
 </style>
 """
-
 st.markdown(css, unsafe_allow_html=True)
 
 # =========================
@@ -486,5 +487,3 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
-
-
