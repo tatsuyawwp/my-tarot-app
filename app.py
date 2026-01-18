@@ -217,12 +217,30 @@ elif st.session_state.stage == 4:
       <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}" target="_blank" class="sns-button btn-x"><i class="fa-brands fa-x-twitter"></i> X</a>
       <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line"><i class="fa-brands fa-line"></i> LINE</a>
       <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}" target="_blank" class="sns-button btn-fb"><i class="fa-brands fa-facebook"></i> FB</a>
+      <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}" target="_blank" class="sns-button btn-threads">
+         <i class="fa-brands fa-threads"></i> Threads
+      </a>
+      <a href="https://www.instagram.com/" target="_blank" class="sns-button btn-insta">
+         <i class="fa-brands fa-instagram"></i> Instagram
+      </a>
+      <a href="https://www.tiktok.com/" target="_blank" class="sns-button btn-tiktok">
+         <i class="fa-brands fa-tiktok"></i> TikTok
+      </a>
+    </div>
+    """
+
     </div>
     """
     st.markdown(sns_html, unsafe_allow_html=True)
 
+      # --- 応援（Buy Me a Coffee）---
+    st.divider()
+    st.markdown("### ☕ この占いを続ける応援")
+    st.write("この占いは無料で公開しています。もし少しでも役に立ったら、コーヒー1杯の応援で活動を続けられます。")
+
     st.divider()
     st.link_button("☕ Buy Me a Coffee で応援する", "https://buymeacoffee.com/mystic_tarot", use_container_width=True)
+
 
 
 
