@@ -478,6 +478,8 @@ elif st.session_state.stage == 3:
 ・「今日から3日以内にできる具体的アクション」を3つ提示してください。
 ・どのカードが逆位置なのか、本文のどこかで必ず一度は説明に触れる
 ・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
+・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
+・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 """
                 client = OpenAI(api_key=api_key)
 try:
@@ -516,9 +518,6 @@ elif st.session_state.stage == 4:
     st.markdown("<div class='result-box'>", unsafe_allow_html=True)
     st.markdown(st.session_state.reading_text)
     st.markdown("</div>", unsafe_allow_html=True)
-# プロンプト末尾に追加（既存の箇条書きの一番下あたりに）
-・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
-・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 
     # --- SNS シェア ---
     st.divider()
@@ -566,13 +565,13 @@ elif st.session_state.stage == 4:
 """
     st.markdown(sns_html, unsafe_allow_html=True)
 
-    # --- 応援（Buy Me a Coffee）---
+    # --- 応援（Buy Me a Coffee / OFUSE）---
     st.divider()
     st.markdown("### ☕ この占いを続ける応援")
     st.write(
         "この占いは広告なし・無料で運営しています。"
-    "「また引きたいな」と感じてもらえたら、"
-    "コーヒー1杯分の応援が次の改善や新メニューの開発につながります。"
+        "「また引きたいな」と感じてもらえたら、"
+        "コーヒー1杯分の応援が次の改善や新メニューの開発につながります。"
     )
 
     st.link_button(
@@ -580,11 +579,9 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
-　st.link_button(
-    "💌 OFUSEで応援メッセージを送る（おすすめ）",
-    "https://ofuse.me/あなたのID",
-    use_container_width=True,
-    type="primary",
-)
 
-
+    st.link_button(
+        "💌 OFUSEで応援メッセージを送る（おすすめ）",
+        "https://ofuse.me/YOUR_OFUSE_ID",
+        use_container_width=True,
+    )
