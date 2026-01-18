@@ -65,13 +65,57 @@ api_key = raw_key.strip() if raw_key else None
 st.markdown("""
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-.result-box{ background: #fbfbfd; border-left: 6px solid #d4af37; padding: 18px; border-radius: 12px; line-height: 1.95; font-size: 1.03rem; color: #222; }
-.sns-button{ display:inline-flex; align-items:center; justify-content:center; padding:10px 15px; border-radius:8px; margin:5px; color:#fff !important; text-decoration:none !important; font-weight:bold; font-size:14px; width:100%; box-sizing:border-box; transition:0.3s; }
-.sns-button i{ margin-right:8px; font-size:18px; }
-.btn-x{ background:#000; } .btn-line{ background:#06C755; } .btn-fb{ background:#1877F2; } .btn-threads{ background:#000; }
-.fade-img { width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.result-box{
+  background: #fbfbfd;
+  border-left: 6px solid #d4af37;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.95;
+  font-size: 1.03rem;
+  color: #222;
+}
+
+.sns-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 15px;
+  border-radius:8px;
+  margin:5px;
+  color:#fff !important;
+  text-decoration:none !important;
+  font-weight:bold;
+  font-size:14px;
+  width:100%;
+  box-sizing:border-box;
+  transition:0.3s;
+}
+.sns-button i{
+  margin-right:8px;
+  font-size:18px;
+}
+
+.btn-x{ background:#000; }
+.btn-line{ background:#06C755; }
+.btn-fb{ background:#1877F2; }
+.btn-threads{ background:#000; }
+
+/* ここを追加：Instagram & TikTok の背景 */
+.btn-insta{
+  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+}
+.btn-tiktok{
+  background:#010101;
+}
+
+.fade-img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 # =========================
 # Session State 初期化
@@ -265,3 +309,4 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
