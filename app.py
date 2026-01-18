@@ -12,9 +12,11 @@ st.set_page_config(page_title="神秘の誕生日タロット", page_icon="🔮"
 st.title("🔮 神秘の誕生日タロット占い（無料版）")
 
 # =========================
-# 画像URLとメタデータ（22枚維持）
+# 画像URLとメタデータ（22枚）
 # =========================
-TAROT_BACK_URL = "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tarrotback.png?raw=true"
+TAROT_BACK_URL = (
+    "https://github.com/tatsuyawwp/my-tarot-app/blob/main/tarrotback.png?raw=true"
+)
 
 TAROT_DATA = {
     "愚者": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/fool.png?raw=true", "element": "風", "astro": "天王星"},
@@ -76,22 +78,22 @@ def get_life_path_info(num: int) -> str:
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
-CSS = """
+css_html = """
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* ===== 鑑定結果ボックス ===== */
+/* 鑑定結果ボックス */
 .result-box{
-  background: #fbfbfd;
-  border-left: 6px solid #d4af37;
-  padding: 18px;
-  border-radius: 12px;
-  line-height: 1.95;
-  font-size: 1.03rem;
-  color: #222;
+  background:#fbfbfd;
+  border-left:6px solid #d4af37;
+  padding:18px;
+  border-radius:12px;
+  line-height:1.95;
+  font-size:1.03rem;
+  color:#222;
 }
 
-/* ===== SNS ボタン共通 ===== */
+/* SNS ボタン共通 */
 .sns-button{
   display:inline-flex;
   align-items:center;
@@ -117,40 +119,29 @@ CSS = """
 .btn-line{ background:#06C755; }
 .btn-fb{ background:#1877F2; }
 .btn-threads{ background:#000; }
-
-/* Instagram & TikTok の背景 */
 .btn-insta{
-  background:linear-gradient(
-    45deg,
-    #f09433,
-    #e6683c,
-    #dc2743,
-    #cc2366,
-    #bc1888
-  );
+  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
 }
-.btn-tiktok{
-  background:#010101;
-}
+.btn-tiktok{ background:#010101; }
 
 /* カード画像の演出 */
-.fade-img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.fade-img{
+  width:100%;
+  border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* シャッフル中にクルクル回す */
-@keyframes spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes spin{
+  0%{ transform:rotate(0deg); }
+  100%{ transform:rotate(360deg); }
 }
-.shuffle {
-  animation: spin 1.2s linear infinite;
+.shuffle{
+  animation:spin 1.2s linear infinite;
 }
 </style>
 """
-st.markdown(CSS, unsafe_allow_html=True)
+st.markdown(css_html, unsafe_allow_html=True)
 
 # =========================
 # Session State 初期化
@@ -258,7 +249,7 @@ elif st.session_state.stage == 2:
                         st.session_state.stage = 3
                     st.rerun()
 
-# --- stage 3: 鑑定準備 ---
+# --- stage 3: 鑑定準備（API 呼び出し） ---
 elif st.session_state.stage == 3:
     st.subheader("🔮 選ばれた2枚のメッセージ")
 
