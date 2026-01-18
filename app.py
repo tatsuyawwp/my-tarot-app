@@ -234,12 +234,12 @@ elif st.session_state.stage == 4:
     st.markdown(sns_html, unsafe_allow_html=True)
 
       # --- 応援（Buy Me a Coffee）---
-    st.divider()
     st.markdown("### ☕ この占いを続ける応援")
     st.write("この占いは無料で公開しています。もし少しでも役に立ったら、コーヒー1杯の応援で活動を続けられます。")
 
     st.divider()
     st.link_button("☕ Buy Me a Coffee で応援する", "https://buymeacoffee.com/mystic_tarot", use_container_width=True)
+
 
 
 
