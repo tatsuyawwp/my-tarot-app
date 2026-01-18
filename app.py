@@ -69,7 +69,6 @@ def get_life_path_info(num: int) -> str:
     }
     return info.get(num, "未知の可能性を秘めた人")
 
-
 # =========================
 # APIキー・CSS
 # =========================
@@ -78,8 +77,10 @@ api_key = raw_key.strip() if raw_key else None
 
 st.markdown(
     """
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+/* ===== 鑑定結果ボックス ===== */
 .result-box{
   background: #fbfbfd;
   border-left: 6px solid #d4af37;
@@ -90,7 +91,7 @@ st.markdown(
   color: #222;
 }
 
-/* SNS ボタン */
+/* ===== SNS ボタン共通 ===== */
 .sns-button{
   display:inline-flex;
   align-items:center;
@@ -111,11 +112,47 @@ st.markdown(
   font-size:18px;
 }
 
+/* 各サービスの色 */
+.btn-x{ background:#000; }
+.btn-line{ background:#06C755; }
+.btn-fb{ background:#1877F2; }
+.btn-threads{ background:#000; }
 
+/* Instagram & TikTok の背景 */
+.btn-insta{
+  background:linear-gradient(
+    45deg,
+    #f09433,
+    #e6683c,
+    #dc2743,
+    #cc2366,
+    #bc1888
+  );
+}
+.btn-tiktok{
+  background:#010101;
+}
+
+/* カード画像の演出 */
+.fade-img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* シャッフル中にクルクル回す */
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.shuffle {
+  animation: spin 1.2s linear infinite;
+}
 </style>
 """,
     unsafe_allow_html=True,
 )
+
 
 # =========================
 # Session State 初期化
@@ -369,4 +406,5 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
 
