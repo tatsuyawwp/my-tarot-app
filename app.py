@@ -212,15 +212,18 @@ elif st.session_state.stage == 3:
     c1, c2 = st.columns(2)
     card1 = st.session_state.selected_cards[0]
     card2 = st.session_state.selected_cards[1]
-    with c1: st.image(TAROT_DATA[card1]["url"], caption=f"1. 現在の状況: {card1}")
-    with c2: st.image(TAROT_DATA[card2]["url"], caption=f"2. 未来の鍵: {card2}")
+    with c1:
+        st.image(TAROT_DATA[card1]["url"], caption=f"1. 現在の状況: {card1}")
+    with c2:
+        st.image(TAROT_DATA[card2]["url"], caption=f"2. 未来の鍵: {card2}")
 
     if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
         if not api_key:
             st.error("APIキーが必要です。")
         else:
-                       lp_num = calc_life_path(birthday)
+            lp_num = calc_life_path(birthday)
             lp_info = get_life_path_info(lp_num)
+
             with st.spinner("深層意識を読み解いています..."):
                 meta1 = TAROT_DATA[card1]
                 meta2 = TAROT_DATA[card2]
@@ -262,9 +265,12 @@ elif st.session_state.stage == 3:
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": prompt}]
                 )
-                st.session_state.reading_text = response.choices[0].message.content.strip().replace("■ ", "\n### ")
+                st.session_state.reading_text = (
+                    response.choices[0].message.content.strip().replace("■ ", "\n### ")
+                )
                 st.session_state.stage = 4
                 st.rerun()
+
 
 
 # --- stage 4: 結果表示 ---
@@ -342,6 +348,7 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
 
 
 
