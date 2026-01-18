@@ -38,7 +38,7 @@ TAROT_DATA = {
     "月": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/moon.png?raw=true", "element": "水", "astro": "魚座"},
     "太陽": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/sun.png?raw=true", "element": "火", "astro": "太陽"},
     "審判": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/judgement.png?raw=true", "element": "火", "astro": "冥王星"},
-    "世界": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true", "element": "地", "astro": "土星"}
+    "世界": {"url": "https://github.com/tatsuyawwp/my-tarot-app/blob/main/world.png?raw=true", "element": "地", "astro": "土星"},
 }
 
 # =========================
@@ -68,6 +68,7 @@ def get_life_path_info(num: int) -> str:
         33: "宇宙的な愛を持つ菩薩",
     }
     return info.get(num, "未知の可能性を秘めた人")
+
 
 # =========================
 # APIキー・CSS
@@ -149,9 +150,7 @@ CSS = """
 }
 </style>
 """
-
 st.markdown(CSS, unsafe_allow_html=True)
-
 
 # =========================
 # Session State 初期化
@@ -218,7 +217,6 @@ if st.session_state.stage == 0:
 elif st.session_state.stage == 1:
     st.subheader("🌀 カードをミックスしています…")
 
-    # 回転アニメーション付きのカード裏
     st.markdown(
         f"""
         <div style="text-align:center;margin-top:10px;margin-bottom:10px;">
@@ -234,7 +232,6 @@ elif st.session_state.stage == 1:
         st.session_state.stage = 2
         st.rerun()
 
-    # CPU 暴走防止のための軽いスリープ
     time.sleep(0.1)
 
 # --- stage 2: 2枚選ぶ ---
@@ -261,7 +258,7 @@ elif st.session_state.stage == 2:
                         st.session_state.stage = 3
                     st.rerun()
 
-# --- stage 3: 鑑定準備（API 呼び出し） ---
+# --- stage 3: 鑑定準備 ---
 elif st.session_state.stage == 3:
     st.subheader("🔮 選ばれた2枚のメッセージ")
 
@@ -405,6 +402,3 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
-
-
-
