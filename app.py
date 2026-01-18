@@ -219,13 +219,13 @@ elif st.session_state.stage == 3:
         if not api_key:
             st.error("APIキーが必要です。")
         else:
-            lp_num = calc_life_path(birthday)
+                       lp_num = calc_life_path(birthday)
             lp_info = get_life_path_info(lp_num)
             with st.spinner("深層意識を読み解いています..."):
                 meta1 = TAROT_DATA[card1]
                 meta2 = TAROT_DATA[card2]
+
                 prompt = f"""
-prompt = f"""
 あなたは、優しくて説明上手なプロの占い師です。
 数秘術（ライフパスナンバー）とタロットを組み合わせて、相談者の気持ちに寄り添いながら精密に鑑定してください。
 
@@ -256,6 +256,15 @@ prompt = f"""
 ・前向きだけど現実味のあるアドバイスにする
 ・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
 """
+
+                client = OpenAI(api_key=api_key)
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                st.session_state.reading_text = response.choices[0].message.content.strip().replace("■ ", "\n### ")
+                st.session_state.stage = 4
+                st.rerun()
 
 
 # --- stage 4: 結果表示 ---
@@ -333,5 +342,6 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
 
 
