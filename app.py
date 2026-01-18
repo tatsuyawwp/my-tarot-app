@@ -75,8 +75,7 @@ def get_life_path_info(num: int) -> str:
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
-st.markdown(
-    """
+CSS = """
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
@@ -149,9 +148,9 @@ st.markdown(
   animation: spin 1.2s linear infinite;
 }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+"""
+
+st.markdown(CSS, unsafe_allow_html=True)
 
 
 # =========================
@@ -406,5 +405,6 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
 
 
