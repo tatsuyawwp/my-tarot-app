@@ -1,7 +1,6 @@
 import streamlit as st
 import random
 import time
-import hashlib
 import urllib.parse
 from datetime import date
 from openai import OpenAI
@@ -52,9 +51,24 @@ def calc_life_path(bday: date) -> int:
         s = sum(int(d) for d in str(s))
     return s
 
+
 def get_life_path_info(num: int) -> str:
-    info = {1: "自立心の強い開拓者", 2: "繊細な調停者", 3: "明るい表現者", 4: "誠実な構築者", 5: "自由な冒険者", 6: "深い慈愛の博愛者", 7: "心理を追う探求者", 8: "成功を掴む達成者", 9: "精神性の高い完結者", 11: "直感のメッセンジャー", 22: "大きな理想を叶える創造主", 33: "宇宙的な愛を持つ菩薩"}
+    info = {
+        1: "自立心の強い開拓者",
+        2: "繊細な調停者",
+        3: "明るい表現者",
+        4: "誠実な構築者",
+        5: "自由な冒険者",
+        6: "深い慈愛の博愛者",
+        7: "心理を追う探求者",
+        8: "成功を掴む達成者",
+        9: "精神性の高い完結者",
+        11: "直感のメッセンジャー",
+        22: "大きな理想を叶える創造主",
+        33: "宇宙的な愛を持つ菩薩",
+    }
     return info.get(num, "未知の可能性を秘めた人")
+
 
 # =========================
 # APIキー・CSS
@@ -62,7 +76,8 @@ def get_life_path_info(num: int) -> str:
 raw_key = st.secrets.get("OPENAI_API_KEY")
 api_key = raw_key.strip() if raw_key else None
 
-st.markdown("""
+st.markdown(
+    """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 .result-box{
@@ -75,6 +90,7 @@ st.markdown("""
   color: #222;
 }
 
+/* SNS ボタン */
 .sns-button{
   display:inline-flex;
   align-items:center;
@@ -100,7 +116,7 @@ st.markdown("""
 .btn-fb{ background:#1877F2; }
 .btn-threads{ background:#000; }
 
-/* ここを追加：Instagram & TikTok の背景 */
+/* Instagram & TikTok の背景 */
 .btn-insta{
   background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
 }
@@ -108,23 +124,40 @@ st.markdown("""
   background:#010101;
 }
 
+/* カード画像の演出 */
 .fade-img {
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-</style>
-""", unsafe_allow_html=True)
 
+/* シャッフル中にクルクル回す */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.shuffle {
+  animation: spin 1.2s linear infinite;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
 
 # =========================
 # Session State 初期化
 # =========================
-if "stage" not in st.session_state: st.session_state.stage = 0
-if "deck" not in st.session_state: st.session_state.deck = []
-if "candidates" not in st.session_state: st.session_state.candidates = []
-if "selected_cards" not in st.session_state: st.session_state.selected_cards = []
-if "reading_text" not in st.session_state: st.session_state.reading_text = None
+if "stage" not in st.session_state:
+    st.session_state.stage = 0
+if "deck" not in st.session_state:
+    st.session_state.deck = []
+if "candidates" not in st.session_state:
+    st.session_state.candidates = []
+if "selected_cards" not in st.session_state:
+    st.session_state.selected_cards = []
+if "reading_text" not in st.session_state:
+    st.session_state.reading_text = None
+
 
 def reset_all():
     st.session_state.stage = 0
@@ -133,11 +166,17 @@ def reset_all():
     st.session_state.selected_cards = []
     st.session_state.reading_text = None
 
+
 # =========================
 # メイン画面
 # =========================
 today = date.today()
-birthday = st.date_input("生年月日を選択", value=date(2000, 1, 1), min_value=date(today.year - 80, 1, 1), max_value=today)
+birthday = st.date_input(
+    "生年月日を選択",
+    value=date(2000, 1, 1),
+    min_value=date(today.year - 80, 1, 1),
+    max_value=today,
+)
 nickname = st.text_input("ニックネーム", placeholder="例：たろちゃん")
 fortune_topic = st.selectbox("占いたい内容", ["今日の運勢", "恋愛", "仕事"], index=0)
 one_line = st.text_input("気になっていること（任意）", placeholder="例：今日の大事な会議について")
@@ -148,10 +187,15 @@ if st.button("🔄 最初からやり直す"):
 
 st.divider()
 
+# =========================
+# ステージ制御
+# =========================
+
 # --- stage 0: 準備 ---
 if st.session_state.stage == 0:
     st.subheader("🧘‍♂️ 準備")
     st.write("「今の自分」と「未来への鍵」の2枚を引き当てます。")
+
     if st.button("🌀 占いを開始する"):
         if not nickname:
             st.warning("ニックネームを入れてください。")
@@ -163,27 +207,26 @@ if st.session_state.stage == 0:
 
 # --- stage 1: シャッフル演出 ---
 elif st.session_state.stage == 1:
-    st.subheader("🌀 カードをシャッフル中…")
-    st.write("カードは裏で自動的に混ざっています。『ここだ！』と思ったタイミングでストップしてください。")
+    st.subheader("🌀 カードをミックスしています…")
 
-    # 簡易アニメーション（プログレスバー）
-    progress = st.progress(0)
-    for i in range(1, 101):
-        progress.progress(i)
-        time.sleep(0.01)
+    # 回転アニメーション付きのカード裏
+    st.markdown(
+        f"""
+        <div style="text-align:center;margin-top:10px;margin-bottom:10px;">
+          <img src="{TAROT_BACK_URL}" class="fade-img shuffle" style="max-width:180px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.caption("ピンときたタイミングで「⏹️ ストップ」を押してください。")
 
-    # カードの裏面を横に並べて「たくさんある感」を出す
-    cols = st.columns(5)
-    for c in cols:
-        with c:
-            st.image(TAROT_BACK_URL, use_container_width=True)
-
-    # ストップボタン（押したタイミングで7枚ピック）
-    if st.button("⏹️ このタイミングでストップ", use_container_width=True):
+    if st.button("⏹️ ストップ"):
         st.session_state.candidates = random.sample(st.session_state.deck, 7)
         st.session_state.stage = 2
         st.rerun()
 
+    # CPU 暴走防止のための軽いスリープ
+    time.sleep(0.1)
 
 # --- stage 2: 2枚選ぶ ---
 elif st.session_state.stage == 2:
@@ -196,9 +239,12 @@ elif st.session_state.stage == 2:
     cols = st.columns(7)
     for i, name in enumerate(st.session_state.candidates):
         with cols[i]:
-            # 選んだカードは少し透明にする
             opacity = "0.3" if name in st.session_state.selected_cards else "1.0"
-            st.markdown(f'<img src="{TAROT_BACK_URL}" style="width:100%; opacity:{opacity}; border-radius:5px;">', unsafe_allow_html=True)
+            st.markdown(
+                f'<img src="{TAROT_BACK_URL}" '
+                f'style="width:100%; opacity:{opacity}; border-radius:5px;">',
+                unsafe_allow_html=True,
+            )
             if name not in st.session_state.selected_cards:
                 if st.button("選択", key=f"btn_{name}_{i}"):
                     st.session_state.selected_cards.append(name)
@@ -206,9 +252,10 @@ elif st.session_state.stage == 2:
                         st.session_state.stage = 3
                     st.rerun()
 
-# --- stage 3: 鑑定準備 ---
+# --- stage 3: 鑑定準備（API 呼び出し） ---
 elif st.session_state.stage == 3:
     st.subheader("🔮 選ばれた2枚のメッセージ")
+
     c1, c2 = st.columns(2)
     card1 = st.session_state.selected_cards[0]
     card2 = st.session_state.selected_cards[1]
@@ -230,11 +277,14 @@ elif st.session_state.stage == 3:
 
                 prompt = f"""
 あなたは、優しくて説明上手なプロの占い師です。
-数秘術（ライフパスナンバー）とタロットを組み合わせて、相談者の気持ちに寄り添いながら精密に鑑定してください。
+数秘術（ライフパスナンバー）とタロットを組み合わせて、
+相談者の気持ちに寄り添いながら精密に鑑定してください。
 
 まず最初に、
-・ライフパスナンバーとは「生年月日から計算する、その人の人生の基本的なテーマやクセを表す数秘術の数字」であることを、やさしく1〜2文で説明する
-・そのうえで、「{lp_num}番を持つあなたは、{lp_info}という気質がありますね」のように、相談者の性質を丁寧に伝える
+・ライフパスナンバーとは「生年月日から計算する、その人の人生の基本的なテーマやクセを表す数秘術の数字」であることを、
+  やさしく1〜2文で説明する
+・そのうえで、「ライフパス{lp_num}番を持つあなたは、{lp_info}という気質がありますね」のように、
+  相談者の性質を丁寧に伝える
 
 そのあと、次の構成で文章を作ってください。
 
@@ -259,11 +309,10 @@ elif st.session_state.stage == 3:
 ・前向きだけど現実味のあるアドバイスにする
 ・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
 """
-
                 client = OpenAI(api_key=api_key)
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
                 )
                 st.session_state.reading_text = (
                     response.choices[0].message.content.strip().replace("■ ", "\n### ")
@@ -271,23 +320,23 @@ elif st.session_state.stage == 3:
                 st.session_state.stage = 4
                 st.rerun()
 
-
-
 # --- stage 4: 結果表示 ---
 elif st.session_state.stage == 4:
-    # 常に選んだカードを一番上に表示する
     st.subheader(f"✨ {nickname} さんの鑑定結果")
+
     c1, c2 = st.columns(2)
     card1 = st.session_state.selected_cards[0]
     card2 = st.session_state.selected_cards[1]
-    with c1: st.image(TAROT_DATA[card1]["url"], caption=f"現状：{card1}")
-    with c2: st.image(TAROT_DATA[card2]["url"], caption=f"助言：{card2}")
+    with c1:
+        st.image(TAROT_DATA[card1]["url"], caption=f"現状：{card1}")
+    with c2:
+        st.image(TAROT_DATA[card2]["url"], caption=f"助言：{card2}")
 
     st.markdown("<div class='result-box'>", unsafe_allow_html=True)
     st.markdown(st.session_state.reading_text)
     st.markdown("</div>", unsafe_allow_html=True)
 
-      # --- SNS シェア（元のボタンを復旧） ---
+    # --- SNS シェア ---
     st.divider()
     st.write("### 🔮 幸運をシェアする")
 
@@ -331,7 +380,6 @@ elif st.session_state.stage == 4:
 
     </div>
     """
-
     st.markdown(sns_html, unsafe_allow_html=True)
 
     # --- 応援（Buy Me a Coffee）---
@@ -348,7 +396,3 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
-
-
-
-
