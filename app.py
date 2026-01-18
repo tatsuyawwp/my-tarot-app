@@ -184,4 +184,48 @@ elif st.session_state.stage == 2:
 # --- ステージ 3: 鑑定ボタン ---
 elif st.session_state.stage == 3:
     c1, c2 = st.columns(2)
-    card1, card2 = st.session_
+    card1, card2 = st.session_state.selected_cards
+    c1.image(TAROT_DATA[card1]["url"], caption=f"現状: {card1}")
+    c2.image(TAROT_DATA[card2]["url"], caption=f"未来: {card2}")
+    
+    if st.button("🔮 鑑定結果を生成する", use_container_width=True):
+        if not api_key: st.error("APIキーが設定されていません。")
+        else:
+            with st.spinner("鑑定中..."):
+                lp_num = calc_life_path(birthday)
+                lp_info = get_life_path_info(lp_num)
+                client = OpenAI(api_key=api_key)
+                prompt = f"{nickname}さんの鑑定。LP{lp_num}({lp_info})、カード:{card1},{card2}。優しく詳細に。"
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                st.session_state.reading_text = response.choices[0].message.content
+                st.session_state.stage = 4
+                st.rerun()
+
+# --- ステージ 4: 結果表示 ---
+elif st.session_state.stage == 4:
+    st.subheader(f"✨ {nickname} さんの鑑定結果")
+    c1, c2 = st.columns(2)
+    card1, card2 = st.session_state.selected_cards
+    c1.image(TAROT_DATA[card1]["url"])
+    c2.image(TAROT_DATA[card2]["url"])
+
+    st.markdown(f"<div class='result-box'>{st.session_state.reading_text}</div>", unsafe_allow_html=True)
+
+    # SNSシェアセクション
+    st.write("### 🔮 幸運をシェアする")
+    share_url = "https://my-tarot-app.streamlit.app/"
+    share_text = urllib.parse.quote(f"今日のタロットは『{card1}』と『{card2}』でした🔮")
+    encoded_url = urllib.parse.quote(share_url)
+
+    sns_html = f"""
+    <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+        <a href="https://twitter.com/intent/tweet?text={share_text}&url={encoded_url}" target="_blank" class="sns-button btn-x"><i class="fa-brands fa-x-twitter"></i> X</a>
+        <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}" target="_blank" class="sns-button btn-line"><i class="fa-brands fa-line"></i> LINE</a>
+        <a href="https://www.threads.net/intent/post?text={share_text}" target="_blank" class="sns-button btn-threads"><i class="fa-brands fa-threads"></i> Threads</a>
+    </div>
+    """
+    st.markdown(sns_html, unsafe_allow_html=True)
+    st.link_button("☕ 開発者を応援する", "https://buymeacoffee.com/mystic_tarot", use_container_width=True)
