@@ -163,13 +163,27 @@ if st.session_state.stage == 0:
 
 # --- stage 1: シャッフル演出 ---
 elif st.session_state.stage == 1:
-    st.subheader("🌀 ミックス中…")
-    st.image(TAROT_BACK_URL, width=200)
-    if st.button("⏹️ ストップ"):
+    st.subheader("🌀 カードをシャッフル中…")
+    st.write("カードは裏で自動的に混ざっています。『ここだ！』と思ったタイミングでストップしてください。")
+
+    # 簡易アニメーション（プログレスバー）
+    progress = st.progress(0)
+    for i in range(1, 101):
+        progress.progress(i)
+        time.sleep(0.01)
+
+    # カードの裏面を横に並べて「たくさんある感」を出す
+    cols = st.columns(5)
+    for c in cols:
+        with c:
+            st.image(TAROT_BACK_URL, use_container_width=True)
+
+    # ストップボタン（押したタイミングで7枚ピック）
+    if st.button("⏹️ このタイミングでストップ", use_container_width=True):
         st.session_state.candidates = random.sample(st.session_state.deck, 7)
         st.session_state.stage = 2
         st.rerun()
-    time.sleep(0.1)
+
 
 # --- stage 2: 2枚選ぶ ---
 elif st.session_state.stage == 2:
@@ -211,28 +225,38 @@ elif st.session_state.stage == 3:
                 meta1 = TAROT_DATA[card1]
                 meta2 = TAROT_DATA[card2]
                 prompt = f"""
-占い師として、数秘術とタロットを融合した精密鑑定を行ってください。
-相談者：{nickname}
-ライフパス：{lp_num}（{lp_info}）
-内容：{fortune_topic} / {one_line}
-引いたカード：
-1. 現状：{card1}（{meta1['element']}元素 / {meta1['astro']}）
-2. 助言：{card2}（{meta2['element']}元素 / {meta2['astro']}）
+prompt = f"""
+あなたは、優しくて説明上手なプロの占い師です。
+数秘術（ライフパスナンバー）とタロットを組み合わせて、相談者の気持ちに寄り添いながら精密に鑑定してください。
 
-【構成】
-1. あなたが今、引き寄せている「エネルギーの正体」
-2. 数秘{lp_num}から見る「今の課題」と「{card1}」の関係
-3. 未来を好転させる「{card2}」の具体的な使い道
-4. 鑑定のまとめと背中を押す言葉
+まず最初に、
+・ライフパスナンバーとは「生年月日から計算する、その人の人生の基本的なテーマやクセを表す数秘術の数字」であることを、やさしく1〜2文で説明する
+・そのうえで、「{lp_num}番を持つあなたは、{lp_info}という気質がありますね」のように、相談者の性質を丁寧に伝える
+
+そのあと、次の構成で文章を作ってください。
+
+【相談者情報】
+ニックネーム：{nickname}
+ライフパスナンバー：{lp_num}（{lp_info}）
+相談内容：{fortune_topic}
+補足メモ：{one_line}
+
+【引いたカード】
+1. 現状：{card1}（元素：{meta1['element']} / 占星術的キーワード：{meta1['astro']}）
+2. 助言：{card2}（元素：{meta2['element']} / 占星術的キーワード：{meta2['astro']}）
+
+【出力構成】
+1. ライフパス{lp_num}の簡単な説明と、今日のテーマとのかかわり
+2. 今のあなたが引き寄せている「エネルギーの正体」（主に {card1} を中心に）
+3. 未来を好転させるために、{card2} をどう使えばいいか（具体的な行動レベルで）
+4. 今日一日を安心して過ごすための、やさしい一言メッセージ
+
+・難しい専門用語はできるだけ噛み砕いて説明する
+・不安をあおる言い方や、「絶対こうなる」といった断定は避ける
+・前向きだけど現実味のあるアドバイスにする
+・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
 """
-                client = OpenAI(api_key=api_key)
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                st.session_state.reading_text = response.choices[0].message.content.strip().replace("■ ", "\n### ")
-                st.session_state.stage = 4
-                st.rerun()
+
 
 # --- stage 4: 結果表示 ---
 elif st.session_state.stage == 4:
@@ -309,4 +333,5 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
 
