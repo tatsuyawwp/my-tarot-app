@@ -111,34 +111,7 @@ st.markdown(
   font-size:18px;
 }
 
-.btn-x{ background:#000; }
-.btn-line{ background:#06C755; }
-.btn-fb{ background:#1877F2; }
-.btn-threads{ background:#000; }
 
-/* Instagram & TikTok の背景 */
-.btn-insta{
-  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
-}
-.btn-tiktok{
-  background:#010101;
-}
-
-/* カード画像の演出 */
-.fade-img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* シャッフル中にクルクル回す */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.shuffle {
-  animation: spin 1.2s linear infinite;
-}
 </style>
 """,
     unsafe_allow_html=True,
@@ -396,3 +369,4 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
