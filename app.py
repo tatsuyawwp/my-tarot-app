@@ -225,14 +225,24 @@ css = """
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* シャッフル中にクルクル回す */
-@keyframes spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* ふわふわ上下に揺れる（回転なし） */
+@keyframes floaty {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
 }
+
+/* ほんのり明るさが変わる */
+@keyframes shimmer {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(1.08); }
+  100% { filter: brightness(1); }
+}
+
 .shuffle {
-  animation: spin 1.2s linear infinite;
+  animation: floaty 1.2s ease-in-out infinite, shimmer 1.6s ease-in-out infinite;
 }
+
 </style>
 """
 st.markdown(css, unsafe_allow_html=True)
@@ -487,3 +497,4 @@ elif st.session_state.stage == 4:
         "https://buymeacoffee.com/mystic_tarot",
         use_container_width=True,
     )
+
