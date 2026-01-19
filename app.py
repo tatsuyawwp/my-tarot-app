@@ -569,7 +569,7 @@ elif st.session_state.stage == 4:
     st.write(
         "この占いは広告なし・無料で運営しています。"
         "「また引きたいな」と感じてもらえたら、"
-        "コーヒー1杯分の応援が次の改善や新メニューの開発につながります。"
+        "コーヒー1杯分の応援がアプリの維持、次の改善や新メニューの開発につながります。"
     )
 
     st.link_button(
@@ -583,6 +583,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
