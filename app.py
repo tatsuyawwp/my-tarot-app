@@ -141,17 +141,19 @@ TAROT_DATA = {
 # ロジック関数
 # =========================
 def calc_life_path(bday: date) -> int:
-    digits = bday.strftime("%Y%m%d")
-    s = sum(int(d) for d in digits)
-    while s > 9 and s not in [11, 22, 33]:
-        s = sum(int(d) for d in str(s))
-    return s
     """
     生年月日からライフパスナンバーを算出する。
     11, 22, 33 はマスターナンバーとして分解せず、そのまま返す。
     それ以外は1桁になるまで足し合わせる。
     """
-    def get_life_path_info(num: int) -> str:
+    digits = bday.strftime("%Y%m%d")
+    s = sum(int(d) for d in digits)
+    while s > 9 and s not in [11, 22, 33]:
+        s = sum(int(d) for d in str(s))
+    return s
+
+
+def get_life_path_info(num: int) -> str:
     info = {
         1: "自立心の強い開拓者",
         2: "繊細な調停者",
@@ -167,6 +169,7 @@ def calc_life_path(bday: date) -> int:
         33: "宇宙的な愛を持つ菩薩",
     }
     return info.get(num, "未知の可能性を秘めた人")
+
 
 
 # =========================
@@ -585,3 +588,4 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/YOUR_OFUSE_ID",
         use_container_width=True,
     )
+
