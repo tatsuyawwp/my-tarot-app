@@ -427,14 +427,13 @@ elif st.session_state.stage == 3:
     with c2:
         show_card(card2, rev2, "2. 未来の鍵")
 
-   if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
-    if not api_key:
-        st.error("APIキーが必要です。")
-    else:
-        lp_num = calc_life_path(birthday)
-        lp_info = get_life_path_info(lp_num)
+    if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
+        if not api_key:
+            st.error("APIキーが必要です。")
+        else:
+            lp_num = calc_life_path(birthday)
+            lp_info = get_life_path_info(lp_num)
 
-        with st.spinner("深層意識を読み解いています..."):
             meta1 = TAROT_DATA[card1]
             meta2 = TAROT_DATA[card2]
 
@@ -442,15 +441,12 @@ elif st.session_state.stage == 3:
             pos2 = "逆位置" if rev2 else "正位置"
 
             prompt = f"""
-あなたは、あなたは数秘術と黄金の夜明け団のタロット象徴体系を極めた超一流の占い師です。口調は優しくて説明上手なプロの占い師です。
-数秘術（ライフパスナンバー）とタロットを組み合わせて、
-相談者の気持ちに寄り添いながら精密に鑑定してください。
+あなたは、数秘術と黄金の夜明け団のタロット象徴体系を極めた超一流の占い師です。口調は優しくて説明上手なプロの占い師です。
+数秘術（ライフパスナンバー）とタロットを組み合わせて、相談者の気持ちに寄り添いながら精密に鑑定してください。
 
 まず最初に、
-・ライフパスナンバーとは「生年月日から計算する、その人の人生の基本的なテーマやクセを表す数秘術の数字」であることを、
-  やさしく1〜2文で説明する
-・そのうえで、「ライフパス{lp_num}番を持つあなたは、{lp_info}という気質がありますね」のように、
-  相談者の性質を丁寧に伝える
+・ライフパスナンバーとは「生年月日から計算する、その人の人生の基本的なテーマやクセを表す数秘術の数字」であることを、やさしく1〜2文で説明する
+・そのうえで、「ライフパス{lp_num}番を持つあなたは、{lp_info}という気質がありますね」のように、相談者の性質を丁寧に伝える
 
 そのあと、次の構成で文章を作ってください。
 
@@ -468,29 +464,29 @@ elif st.session_state.stage == 3:
 1. ライフパス{lp_num}の簡単な説明と、今日のテーマとのかかわり
 2. 今のあなたが引き寄せている「エネルギーの正体」（主に {card1} を中心に）
 3. 未来を好転させるために、{card2} をどう使えばいいか（具体的な行動レベルで）
-4.  守護のメッセージ
+4. 守護のメッセージ
 
 【トーンと逆位置の扱い】
 ・難しい専門用語はできるだけ噛み砕いて説明する
 ・不安をあおる言い方や、「絶対こうなる」といった断定は避ける
 ・前向きだけど現実味のあるアドバイスにする
-・カードが逆位置（{pos1} や {pos2}）で出ている場合は、
-  「悪い」「不吉」と断定するのではなく、
- 「内省、過剰、遅延、隠れた可能性」としてポジティブなニュアンスで、やさしく解釈する。
-・ 2つのカードの元素の組み合わせ（例：火×地など）から、現在の運気の流れ（スムーズか、摩擦があるか）を述べてください。
-・「今日から3日以内にできる具体的アクション」を3つ提示してください。
+・カードが逆位置（{pos1} や {pos2}）で出ている場合は、「悪い」「不吉」と断定するのではなく、「内省、過剰、遅延、隠れた可能性」としてポジティブなニュアンスで、やさしく解釈する
+・2つのカードの元素の組み合わせ（例：火×地など）から、現在の運気の流れ（スムーズか、摩擦があるか）を述べてください
+・「今日から3日以内にできる具体的アクション」を3つ提示してください
 ・どのカードが逆位置なのか、本文のどこかで必ず一度は説明に触れる
 ・文字量は、スマホで読んで「お得感があるな」と思えるボリュームにする
 ・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
 ・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 """
-               client = OpenAI(api_key=api_key)
+
+            client = OpenAI(api_key=api_key)
 
             try:
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}],
-                )
+                with st.spinner("深層意識を読み解いています..."):
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[{"role": "user", "content": prompt}],
+                    )
 
                 text = response.choices[0].message.content.strip()
                 st.session_state.reading_text = text
@@ -587,6 +583,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
