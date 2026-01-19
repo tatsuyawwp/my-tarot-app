@@ -484,24 +484,24 @@ elif st.session_state.stage == 3:
 ・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
 ・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 """
-                client = OpenAI(api_key=api_key)
+              client = OpenAI(api_key=api_key)
+
 try:
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
-        # temperature=0.9 くらい足してもOK（少し占いっぽさUP）
+        # temperature=0.9  # 少し占いっぽさを出したい場合
     )
+
     text = response.choices[0].message.content.strip()
-    # 必要ならここで置換
     st.session_state.reading_text = text
     st.session_state.stage = 4
     st.rerun()
+
 except Exception as e:
     st.error("少し混み合っているようです。時間をおいてもう一度お試しください。")
     st.caption(f"（エラー内容: {e}）")
 
-                st.session_state.stage = 4
-                st.rerun()
 
 # --- stage 4: 結果表示 ---
 elif st.session_state.stage == 4:
@@ -588,4 +588,5 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/YOUR_OFUSE_ID",
         use_container_width=True,
     )
+
 
