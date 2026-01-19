@@ -12,7 +12,7 @@ st.set_page_config(page_title="『数命アルカナ（Sumei Arcana）：AIが�
 st.title("🔮 『数命アルカナ（Sumei Arcana）：AIが贈る運命の設計図』（無料版）")
 st.write(
     "生年月日から導き出すライフパスナンバーと、"
-    "AIを使ってオリジナルアルゴリズムを実装したタロット占いです"
+    "AIを使ってオリジナルアルゴリズムを実装したタロット占いです。"
     "今のあなたへのメッセージをお届けします。"
     )
 st.caption("※エンタメ占いとしてお楽しみください。")
@@ -583,6 +583,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
