@@ -427,21 +427,21 @@ elif st.session_state.stage == 3:
     with c2:
         show_card(card2, rev2, "2. 未来の鍵")
 
-    if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
-        if not api_key:
-            st.error("APIキーが必要です。")
-        else:
-            lp_num = calc_life_path(birthday)
-            lp_info = get_life_path_info(lp_num)
+   if st.button("🔮 鑑定結果を生成する（無料）", use_container_width=True):
+    if not api_key:
+        st.error("APIキーが必要です。")
+    else:
+        lp_num = calc_life_path(birthday)
+        lp_info = get_life_path_info(lp_num)
 
-            with st.spinner("深層意識を読み解いています..."):
-                meta1 = TAROT_DATA[card1]
-                meta2 = TAROT_DATA[card2]
+        with st.spinner("深層意識を読み解いています..."):
+            meta1 = TAROT_DATA[card1]
+            meta2 = TAROT_DATA[card2]
 
-                pos1 = "逆位置" if rev1 else "正位置"
-                pos2 = "逆位置" if rev2 else "正位置"
+            pos1 = "逆位置" if rev1 else "正位置"
+            pos2 = "逆位置" if rev2 else "正位置"
 
-                prompt = f"""
+            prompt = f"""
 あなたは、あなたは数秘術と黄金の夜明け団のタロット象徴体系を極めた超一流の占い師です。口調は優しくて説明上手なプロの占い師です。
 数秘術（ライフパスナンバー）とタロットを組み合わせて、
 相談者の気持ちに寄り添いながら精密に鑑定してください。
@@ -484,23 +484,22 @@ elif st.session_state.stage == 3:
 ・見出しは「## 見出しタイトル」のようにMarkdown形式で入れてください
 ・具体的な行動は「- 箇条書き」で3つ以上、わかりやすく書いてください
 """
-              client = OpenAI(api_key=api_key)
+               client = OpenAI(api_key=api_key)
 
-try:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        # temperature=0.9  # 少し占いっぽさを出したい場合
-    )
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                )
 
-    text = response.choices[0].message.content.strip()
-    st.session_state.reading_text = text
-    st.session_state.stage = 4
-    st.rerun()
+                text = response.choices[0].message.content.strip()
+                st.session_state.reading_text = text
+                st.session_state.stage = 4
+                st.rerun()
 
-except Exception as e:
-    st.error("少し混み合っているようです。時間をおいてもう一度お試しください。")
-    st.caption(f"（エラー内容: {e}）")
+            except Exception as e:
+                st.error("少し混み合っているようです。時間をおいてもう一度お試しください。")
+                st.caption(f"（エラー内容: {e}）")
 
 
 # --- stage 4: 結果表示 ---
@@ -585,8 +584,9 @@ elif st.session_state.stage == 4:
 
     st.link_button(
         "💌 OFUSEで応援メッセージを送る（おすすめ）",
-        "https://ofuse.me/YOUR_OFUSE_ID",
+        "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
