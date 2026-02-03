@@ -611,11 +611,12 @@ st.link_button(
     use_container_width=True,
 )
 
-    st.link_button(
+st.link_button(
         "💌 OFUSEで応援メッセージを送る（おすすめ）",
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
