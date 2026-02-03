@@ -8,8 +8,8 @@ from openai import OpenAI
 # =========================
 # ページ設定
 # =========================
-st.set_page_config(page_title="『数命アルカナ（Sumei Arcana）：AIが贈る運命の設計図』", page_icon="🔮")
-st.title("🔮 『数命アルカナ（Sumei Arcana）：AIが贈る運命の設計図』（無料版）")
+st.set_page_config(page_title="『数命アルカナ（Sumei Arcana）：今の自分を整理するためのタロット（無料）』", page_icon="🔮")
+st.title("🔮 『数命アルカナ（Sumei Arcana）：今の自分を整理するためのタロット（無料）』（無料版）")
 st.write(
     "生年月日から導き出すライフパスナンバーと、"
     "AIを使ってオリジナルアルゴリズムを実装したタロット占いです。"
@@ -583,6 +583,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
