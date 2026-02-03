@@ -585,33 +585,38 @@ st.divider()
 st.markdown("### ☕ この占いを、また使いたい方へ")
 
 st.write("""
-    この占いは、広告なし・無料で公開しています。
+この占いは、広告なし・無料で公開しています。
 
-    「また引きたいな」
-    「少し気持ちが整理できた」
+「また引きたいな」
+「少し気持ちが整理できた」
 
-    そう感じてもらえたら、
-    コーヒー1杯分の応援で
-    そっと支えてもらえたら嬉しいです。
+そう感じてもらえたら、
+コーヒー1杯分の応援で
+そっと支えてもらえたら嬉しいです。
 
-    応援は、
-    この占いを続けるための
-    小さな支えになります。
- """)
+応援は、
+この占いを続けるための
+小さな支えになります。
+""")
 
+st.link_button(
+    "☕ Buy Me a Coffee で応援する",
+    "https://buymeacoffee.com/mystic_tarot",
+    use_container_width=True,
+)
 
-
-    st.link_button(
-        "☕ Buy Me a Coffee で応援する",
-        "https://buymeacoffee.com/mystic_tarot",
-        use_container_width=True,
-    )
+st.link_button(
+    "💌 OFUSE で応援メッセージを送る（おすすめ）",
+    "https://ofuse.me/（あなたのURL）",
+    use_container_width=True,
+)
 
     st.link_button(
         "💌 OFUSEで応援メッセージを送る（おすすめ）",
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
