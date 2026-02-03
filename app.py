@@ -582,11 +582,21 @@ elif st.session_state.stage == 4:
 
     # --- 応援（Buy Me a Coffee / OFUSE）---
     st.divider()
-    st.markdown("### ☕ この占いを続ける応援")
+    st.markdown("### ☕ この占いを、また使いたい方へ")
     st.write(
-        "この占いは広告なし・無料で運営しています。"
-        "「また引きたいな」と感じてもらえたら、"
-        "コーヒー1杯分の応援がアプリの維持、次の改善や新メニューの開発につながります。"
+       この占いは、広告なし・無料で公開しています。
+
+「また引きたいな」
+「少し気持ちが整理できた」
+
+そう感じてもらえたら、
+コーヒー1杯分の応援で
+そっと支えてもらえたら嬉しいです。
+
+応援は、
+この占いを続けるための
+小さな支えになります。
+
     )
 
     st.link_button(
@@ -600,6 +610,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
