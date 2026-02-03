@@ -11,7 +11,7 @@ from openai import OpenAI
 st.set_page_config(page_title="『数命アルカナ（Sumei Arcana）：今の自分を整理するためのタロット（無料）』", page_icon="🔮")
 st.title("🔮 『数命アルカナ（Sumei Arcana）：今の自分を整理するためのタロット（無料）』（無料版）")
 st.write(
-   数命アルカナは、
+   "数命アルカナは、
 生年月日とタロットを使って
 **「今の自分の状態」を整理するための占いです。
 
@@ -596,6 +596,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
