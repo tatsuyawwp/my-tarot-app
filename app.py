@@ -578,13 +578,13 @@ elif st.session_state.stage == 4:
 
 </div>
 """
-       st.markdown(sns_html, unsafe_allow_html=True)
+st.markdown(sns_html, unsafe_allow_html=True)
 
     # --- 応援（Buy Me a Coffee / OFUSE） ---
-    st.divider()
-    st.markdown("### ☕ この占いを、また使いたい方へ")
+st.divider()
+st.markdown("### ☕ この占いを、また使いたい方へ")
 
-    st.write("""
+st.write("""
     この占いは、広告なし・無料で公開しています。
 
     「また引きたいな」
@@ -597,7 +597,7 @@ elif st.session_state.stage == 4:
     応援は、
     この占いを続けるための
     小さな支えになります。
-    """)
+ """)
 
 
 
@@ -612,6 +612,7 @@ elif st.session_state.stage == 4:
         "https://ofuse.me/mystictarot",
         use_container_width=True,
     )
+
 
 
 
