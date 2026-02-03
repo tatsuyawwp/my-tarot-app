@@ -535,52 +535,58 @@ elif st.session_state.stage == 4:
     st.markdown("</div>", unsafe_allow_html=True)
 
     # --- SNS シェア ---
-    st.divider()
-    st.write("### 🔮 幸運をシェアする")
+st.divider()
+st.write("### 🔮 幸運をシェアする")
 
-    share_url = "https://my-tarot-app.streamlit.app/"
+share_url = "https://my-tarot-app.streamlit.app/"
+
+# card1 / card2 が未定義になる可能性があるので保険
+try:
     share_text = f"今日の鑑定は『{card1}』と『{card2}』🔮 #AIタロット"
-    encoded_text = urllib.parse.quote(share_text)
-    encoded_url = urllib.parse.quote(share_url)
+except NameError:
+    share_text = "数命アルカナで今日の気持ちを整理しました🔮 #AIタロット"
 
-    sns_html = f"""
+encoded_text = urllib.parse.quote(share_text)
+encoded_url = urllib.parse.quote(share_url)
+
+sns_html = f"""
 <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
 
   <a href="https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
      target="_blank" class="sns-button btn-x">
-     <i class="fa-brands fa-x-twitter"></i> X
+     X
   </a>
 
   <a href="https://social-plugins.line.me/lineit/share?url={encoded_url}"
      target="_blank" class="sns-button btn-line">
-     <i class="fa-brands fa-line"></i> LINE
+     LINE
   </a>
 
   <a href="https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
      target="_blank" class="sns-button btn-fb">
-     <i class="fa-brands fa-facebook"></i> FB
+     FB
   </a>
 
   <a href="https://www.threads.net/intent/post?text={encoded_text}%0A{encoded_url}"
      target="_blank" class="sns-button btn-threads">
-     <i class="fa-brands fa-threads"></i> Threads
+     Threads
   </a>
 
   <a href="https://www.instagram.com/"
      target="_blank" class="sns-button btn-insta">
-     <i class="fa-brands fa-instagram"></i> Instagram
+     Instagram
   </a>
 
   <a href="https://www.tiktok.com/"
      target="_blank" class="sns-button btn-tiktok">
-     <i class="fa-brands fa-tiktok"></i> TikTok
+     TikTok
   </a>
 
 </div>
 """
 st.markdown(sns_html, unsafe_allow_html=True)
 
-    # --- 応援（Buy Me a Coffee / OFUSE） ---
+# --- 応援（Buy Me a Coffee / OFUSE） ---
 st.divider()
 st.markdown("### ☕ この占いを、また使いたい方へ")
 
@@ -606,24 +612,10 @@ st.link_button(
 )
 
 st.link_button(
-    "💌 OFUSE で応援メッセージを送る（おすすめ）",
-    "https://ofuse.me/（あなたのURL）",
+    "💌 OFUSEで応援メッセージを送る（おすすめ）",
+    "https://ofuse.me/mystictarot",
     use_container_width=True,
 )
-
-st.link_button(
-        "💌 OFUSEで応援メッセージを送る（おすすめ）",
-        "https://ofuse.me/mystictarot",
-        use_container_width=True,
-    )
-
-
-
-
-
-
-
-
 
 
 
